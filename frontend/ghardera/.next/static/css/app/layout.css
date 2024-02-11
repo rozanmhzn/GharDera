@@ -495,9 +495,6 @@ video {
   --tw-backdrop-saturate:  ;
   --tw-backdrop-sepia:  ;
 }
-.static {
-  position: static;
-}
 .mt-10 {
   margin-top: 2.5rem;
 }
