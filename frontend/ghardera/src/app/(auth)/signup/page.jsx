@@ -19,13 +19,13 @@ const SignUp = () => {
   };
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[30rem] box-shadow p-6">
+      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 background">
+        <div className=" sm:mx-auto sm:w-full sm:max-w-[30rem] box-shadow p-6">
           <div className="flex justify-center items-center p-5">
             <h1>Logo</h1>
           </div>
           <div className="flex justify-center items-center p-5">
-            <h1>Welcome ghardera Sign Up page!!</h1>
+            <h1>Welcome Ghardera Sign Up Page!!</h1>
           </div>
           <form className="space-y-2" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex justify-between ">
@@ -113,14 +113,14 @@ const SignUp = () => {
               <div className="mt-1">
                 <Controller
                   control={control}
-                  name={"contact"}
+                  name={"password"}
                   rules={{ required: "required" }}
                   render={({ field }) => (
                     <PasswordInput
                       {...field}
                       control
-                      placeholder="Contact"
-                      error={errors.contact?.message}
+                      placeholder="Password"
+                      error={errors.password?.message}
                     />
                   )}
                 />
