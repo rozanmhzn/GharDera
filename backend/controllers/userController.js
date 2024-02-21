@@ -71,8 +71,43 @@ const signupUser = async (req, res) => {
   // res.json({msg: "signup user", });
 };
 
+//password change
+const changePassword = async (req, res) =>{
+  const userID = req.user;
+  const {oldpassword, newpassword} = req.body;
+try{
+    if(!oldpassword || !newpassword){
+        throw new Error("Please fill all fields..!!");
+    }
+
+    if (!validator.isStrongPassword(newpassword)) {
+      throw Error("strong password required.");
+    }
+    const user = await User.findById(userID);
+
+    if(!user){
+              throw Error("User not found.!!");
+    }
+
+    const match = await bcrypt.compare(oldpassword, user.password);
+     if (!match) {
+    throw new Error("incorrect password");
+  }
+  const salt = await bcrypt.genSalt(10);
+  const password = await bcrypt.hash(newpassword, salt) ;
+
+  user.password = password;
+  await user.save();
+  return res.status(200).json({message : "Password changed successfully"});
+  }
+  catch(err){
+  return res.status(400).json({error : err.message});
+}
+};
 
 module.exports = {
   loginUser,
-  signupUser
+  signupUser,
+  verifyToken,
+  changePassword,
 };
