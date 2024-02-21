@@ -8,6 +8,35 @@ const createToken = (_id) => {
   return jwt.sign({ _id }, SecretKey, { expiresIn: "1d" });
 };
 
+//middleware for knowing whether user is authenticated or not
+const verifyToken = (req, res, next) => {
+  const token = req.headers["authorization"];
+
+  //checking if token is provided or not
+  if (!token) {
+    return res.status(401).json({ message: "No token Provided" });
+  }
+
+  // Extracting token from the header
+  const tokenParts = token.split(" ");
+  if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
+    return res.status(401).json({ message: "Invalid token format" });
+  }
+  const authToken = tokenParts[1];
+  console.log(authToken);
+  //verifying token
+  jwt.verify(authToken, SecretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Failed to authenticate token" });
+    }
+
+    req.user = decoded._id;
+    console.log(req.user);
+    console.log("completed");
+    next();
+  });
+};
+
 //login user
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
