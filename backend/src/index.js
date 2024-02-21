@@ -5,7 +5,7 @@ const app = express();
 
 const userRoutes = require("../routes/user");
 
-const port = 3000;
+const port = 4000;
 
 app.use(express.json()); //middleware of Express
 
