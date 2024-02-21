@@ -24,7 +24,26 @@ const loginUser = async (req, res) => {
 
 };
 
+//signup user
+const signupUser = async (req, res) => {
+  const { fullname, email, password, number } = req.body;
+
+  try {
+    const user = await User.signup(fullname, email, password, number);
+
+    const token = createToken(user._id); //creating token
+
+    res.status(200).json({ email, token });
+  } catch (error) {
+    //console.log(fullname)
+    res.status(400).json({ error: error.message });
+  }
+
+  // res.json({msg: "signup user", });
+};
+
 
 module.exports = {
   loginUser,
+  signupUser
 };
