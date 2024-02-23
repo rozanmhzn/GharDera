@@ -22,8 +22,12 @@ const userSchema = new Schema({
   },
   number: {
     type: String,
-    required: true,
+    //required: true,
     unique: true,
+  },
+  role: {
+    type: String,
+    default: "user",
   },
   updated: {
     type: Date,

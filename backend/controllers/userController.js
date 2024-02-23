@@ -1,12 +1,22 @@
+require("dotenv").config();
+
 const User = require("../models/userModel");
-
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const validator = require("validator");
 
-const SecretKey = "abcde54321";
+const SecretKey = process.env.SECRET_KEY;
 
-const createToken = (_id) => {
-  return jwt.sign({ _id }, SecretKey, { expiresIn: "1d" });
+//creating JWT token
+const createToken = (user) => {
+  const payload = {
+    userID: user._id,
+    email: user.email,
+    role: user.role,
+  };
+  return jwt.sign(payload, SecretKey, { expiresIn: "1h" });
 };
+
 
 //middleware for knowing whether user is authenticated or not
 const verifyToken = (req, res, next) => {
@@ -30,8 +40,10 @@ const verifyToken = (req, res, next) => {
       return res.status(401).json({ message: "Failed to authenticate token" });
     }
 
-    req.user = decoded._id;
+    req.user = decoded.userID;
+    req.role = decoded.role;
     console.log(req.user);
+    console.log(decoded.role);
     console.log("completed");
     next();
   });
@@ -50,7 +62,6 @@ const loginUser = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
-
 };
 
 //signup user
@@ -72,12 +83,12 @@ const signupUser = async (req, res) => {
 };
 
 //password change
-const changePassword = async (req, res) =>{
+const changePassword = async (req, res) => {
   const userID = req.user;
-  const {oldpassword, newpassword} = req.body;
-try{
-    if(!oldpassword || !newpassword){
-        throw new Error("Please fill all fields..!!");
+  const { oldpassword, newpassword } = req.body;
+  try {
+    if (!oldpassword || !newpassword) {
+      throw new Error("Please fill all fields..!!");
     }
 
     if (!validator.isStrongPassword(newpassword)) {
@@ -85,24 +96,23 @@ try{
     }
     const user = await User.findById(userID);
 
-    if(!user){
-              throw Error("User not found.!!");
+    if (!user) {
+      throw Error("User not found.!!");
     }
 
     const match = await bcrypt.compare(oldpassword, user.password);
-     if (!match) {
-    throw new Error("incorrect password");
-  }
-  const salt = await bcrypt.genSalt(10);
-  const password = await bcrypt.hash(newpassword, salt) ;
+    if (!match) {
+      throw new Error("incorrect password");
+    }
+    const salt = await bcrypt.genSalt(10);
+    const password = await bcrypt.hash(newpassword, salt);
 
-  user.password = password;
-  await user.save();
-  return res.status(200).json({message : "Password changed successfully"});
+    user.password = password;
+    await user.save();
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
-  catch(err){
-  return res.status(400).json({error : err.message});
-}
 };
 
 module.exports = {
