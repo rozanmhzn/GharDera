@@ -1,4 +1,5 @@
 "use client";
+import CategorySection from "@/components/modules/Landing/CategorySection";
 import HeroSection from "@/components/modules/Landing/HeroSection";
 import Navbar from "@/components/partials/Navbar";
 
@@ -9,6 +10,7 @@ export default function Home() {
       <main>
         <Navbar/>
         <HeroSection />
+        <CategorySection/>
       </main>
     </div>
   );
