@@ -10,11 +10,10 @@ const LatestProperties = () => {
     <>
       <div className="flex flex-col gap-7 items-center justify-center w-full font-semibold py-4">
         <h1 className=" text-2xl font-semibold w-full text-center">
-          {" "}
           Latest Properties
         </h1>
 
-        <div className=" w-full mt-7 px-16">
+        <div className="w-full mt-7 px-16">
           <PropertyCard propetiesDetails={propertyDetails} />
           
           <span className="w-full flex justify-center">
