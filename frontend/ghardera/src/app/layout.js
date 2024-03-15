@@ -2,6 +2,7 @@
 
 import "../app/globals.css";
 import "@mantine/core/styles.css";
+import "@mantine/carousel/styles.css";
 
 
 // const inter = Inter({ subsets: ["latin"] });
