@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 
 const mongoose = require("mongoose");
 
@@ -13,6 +14,16 @@ const port = process.env.PORT;
 const dbURL = process.env.DB_URL;
 
 app.use(express.json()); //middleware of Express
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    allowedHeaders: ["Content-Type"],
+    optionsSuccessStatus: 200,
+  })
+);
 
 //custom middleware
 app.use((req, res, next) => {

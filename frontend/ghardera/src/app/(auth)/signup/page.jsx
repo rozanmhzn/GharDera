@@ -2,8 +2,12 @@
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
+import axios from "axios";
+import { Router, useRouter } from "next/navigation";
 
 const SignUp = () => {
+  const router = useRouter();
+
   const {
     handleSubmit,
     formState: { errors },
@@ -12,17 +16,34 @@ const SignUp = () => {
     defaultValues: {
       email: "",
       password: "",
+      fullname: "",
+      number: "",
     },
   });
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+   // console.log(data);
+    try {
+      const response = await axios
+        .post("http://localhost:4000/api/user/signup", data)
+        .then(function (response) {
+          const token = response.data.token;
+          localStorage.setItem("token", token);
+          //console.log(response.data)
+          router.push("/");
+        });
+    } catch (err) {
+      console.log(err);
+    }
+    //console.log(data);
   };
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 background">
         <div className=" sm:mx-auto sm:w-full sm:max-w-[30rem] box-shadow p-6">
           <div className="flex justify-center items-center p-5">
-            <h1>Logo</h1>
+            <Link href="/">
+              <h1>Logo</h1>
+            </Link>
           </div>
           <div className="flex justify-center items-center p-5">
             <h1>Welcome Ghardera Sign Up Page!!</h1>
@@ -31,7 +52,7 @@ const SignUp = () => {
             <div className="flex justify-between ">
               <div className="w-1/2">
                 <label
-                  for="email"
+                  for="fullname"
                   className="block text-sm font-medium  text-gray-900"
                 >
                   Full name
@@ -39,14 +60,14 @@ const SignUp = () => {
                 <div className="mt-1">
                   <Controller
                     control={control}
-                    name={"fullName"}
+                    name={"fullname"}
                     rules={{ required: "required" }}
                     render={({ field }) => (
                       <TextInput
                         {...field}
                         control
                         placeholder="Full Name"
-                        error={errors.fullName?.message}
+                        error={errors.fullname?.message}
                       />
                     )}
                   />
@@ -55,7 +76,7 @@ const SignUp = () => {
 
               <div>
                 <label
-                  for="email"
+                  for="number"
                   className="block text-sm font-medium text-gray-900"
                 >
                   Contact
@@ -63,14 +84,14 @@ const SignUp = () => {
                 <div className="mt-1">
                   <Controller
                     control={control}
-                    name={"contact"}
+                    name={"number"}
                     rules={{ required: "required" }}
                     render={({ field }) => (
                       <TextInput
                         {...field}
                         control
                         placeholder="Contact"
-                        error={errors.contact?.message}
+                        error={errors.number?.message}
                       />
                     )}
                   />
