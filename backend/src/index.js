@@ -39,12 +39,13 @@ async function main() {
   console.log("Connected");
 }
 
-app.get("/", (req, res, next) => {
-  res.send("home page..");
-});
+// app.get("/", (req, res, next) => {
+//   res.send("home page..");
+// });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
 app.use("/api/user", userRoutes);
+app.use("/api/property", propertyRoutes);
