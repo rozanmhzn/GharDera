@@ -28,6 +28,7 @@ const getProperties = async (req, res) => {
 
 module.exports = {
   addProperty,
+  
   getProperties,
  
 };
