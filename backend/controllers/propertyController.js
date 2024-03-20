@@ -25,10 +25,24 @@ const getProperties = async (req, res) => {
   }
 };
 
+//Get property or listing by ID
+
+const getPropertyByID = async (req, res) => {
+  try {
+    const propertyID = await Property.findById(req.params.id);
+    if (!propertyID) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+    res.status(200).json(propertyID);
+  } catch (err) {
+    res.status(404).json(err.message);
+  }
+};
 
 module.exports = {
   addProperty,
-  
   getProperties,
+  getPropertyByID
  
 };
