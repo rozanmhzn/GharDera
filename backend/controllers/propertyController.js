@@ -65,10 +65,27 @@ const updateListing = async (req, res) => {
   }
 };
 
+//delete listing or property
+const deleteListing = async (req, res) => {
+  //searching for property by ID
+  const propertyID = await Property.findById(req.params.id);
+  if (!propertyID) {
+    return res.status(404).json({ message: "Property not found...!!" });
+  }
+
+  try {
+    await Property.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Property Deleted successfully...!!" });
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
 module.exports = {
   addProperty,
   getProperties,
   getPropertyByID,
-  updateListing
+  updateListing,
+  deleteListing
  
 };

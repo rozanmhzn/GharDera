@@ -3,7 +3,8 @@ const {
   addProperty,
   getProperties,
   getPropertyByID,
-  updateListing
+  updateListing,
+  deleteListing
 } = require("../controllers/propertyController");
 const { verifyToken, authorizeRole } = require("../controllers/userController");
 
@@ -29,3 +30,6 @@ router.get('/admin/properties/:id', verifyToken, authorizeRole("admin") ,getProp
 
 //route for updating property
 router.put('/admin/property/:id',verifyToken,authorizeRole("admin") ,updateListing);
+
+//route for deleting property
+router.delete('/admin/property/:id',verifyToken, authorizeRole("admin") ,deleteListing);
