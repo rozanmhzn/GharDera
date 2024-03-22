@@ -40,9 +40,35 @@ const getPropertyByID = async (req, res) => {
   }
 };
 
+//update listing or property
+const updateListing = async (req, res) => {
+  //searching for property by ID
+  const propertyID = await Property.findById(req.params.id);
+
+  //if not found
+  if (!propertyID) {
+    return res.status(404).json({ message: "Property not found" });
+  }
+
+  try {
+    //updates property details by ID
+    const updatedProperty = await Property.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res
+      .status(200)
+      .json({ updatedProperty, message: "Property Updated Successfully" });
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
 module.exports = {
   addProperty,
   getProperties,
-  getPropertyByID
+  getPropertyByID,
+  updateListing
  
 };

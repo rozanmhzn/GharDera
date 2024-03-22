@@ -2,7 +2,8 @@ const { Router } = require("express");
 const {
   addProperty,
   getProperties,
-  getPropertyByID
+  getPropertyByID,
+  updateListing
 } = require("../controllers/propertyController");
 const { verifyToken, authorizeRole } = require("../controllers/userController");
 
@@ -25,3 +26,6 @@ router.post('/admin/property',verifyToken, authorizeRole("admin") ,addProperty);
 
 //route for getting specific property
 router.get('/admin/properties/:id', verifyToken, authorizeRole("admin") ,getPropertyByID);
+
+//route for updating property
+router.put('/admin/property/:id',verifyToken,authorizeRole("admin") ,updateListing);
