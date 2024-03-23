@@ -4,7 +4,8 @@ const {
   getProperties,
   getPropertyByID,
   updateListing,
-  deleteListing
+  deleteListing,
+  searchListing
 } = require("../controllers/propertyController");
 const { verifyToken, authorizeRole } = require("../controllers/userController");
 
@@ -16,6 +17,10 @@ router.get('/user/properties', getProperties)
 
 //route for getting details of specific property
 router.get('/user/properties/:id', getPropertyByID);
+
+//route for searching
+router.get('/search', searchListing)
+
 
 
 //route for getting all properties

@@ -81,11 +81,59 @@ const deleteListing = async (req, res) => {
   }
 };
 
+//Searching properties
+const searchListing = async (req, res) => {
+  try {
+    let query = {};
+
+    const searchQuery = req.query.q;
+
+    if (searchQuery) {
+      query.$or = [
+        { title: { $regex: searchQuery, $options: "i" } },
+        { location: { $regex: searchQuery, $options: "i" } },
+      ];
+    }
+
+    //filter option
+    const minPrice = req.query.minPrice;
+    const maxPrice = req.query.maxPrice;
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) {
+        query.price.$gte = parseFloat(minPrice);
+      }
+      if (maxPrice) {
+        query.price.$lte = parseFloat(maxPrice);
+      }
+    }
+
+    const parking = req.query.parking;
+    if (parking) {
+      query.parking = parking;
+    }
+
+    const propertyType = req.query.propertyType;
+    if (propertyType) {
+      query.propertyType = propertyType;
+    }
+
+    
+    console.log(searchQuery);
+    console.log(query);
+    const results = await Property.find(query);
+    res.status(200).json({ results });
+  } catch (err) {
+    res.status(404).json(err.message);
+  }
+};
+
 module.exports = {
   addProperty,
   getProperties,
   getPropertyByID,
   updateListing,
-  deleteListing
+  deleteListing,
+  searchListing
  
 };
