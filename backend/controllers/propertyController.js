@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const Property = require("../models/propertyModel");
+const Inquiry = require("../models/inquiryModel");
 
 
 //create a listing or post a property
@@ -143,6 +144,16 @@ const submitInquiry = async (req, res) => {
   }
 };
 
+//get all inquiries for admin
+const getInquiries = async (req, res) => {
+  try {
+    const inquiry = await Inquiry.find().populate([{ path : 'property', select : 'title'}]);
+    res.status(200).json({ inquiry });
+  } catch (err) {
+    return res.status(404).json(err.message);
+  }
+};
+
 module.exports = {
   addProperty,
   getProperties,
@@ -150,6 +161,7 @@ module.exports = {
   updateListing,
   deleteListing,
   searchListing,
-  submitInquiry
+  submitInquiry,
+  getInquiries
  
 };
