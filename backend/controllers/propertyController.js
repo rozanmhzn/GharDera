@@ -154,6 +154,25 @@ const getInquiries = async (req, res) => {
   }
 };
 
+//get each inquiry for admin
+
+const getInquiry = async (req, res)=>{
+  const inquiryId = req.params.id;
+
+  try{
+    const inquiry = await Inquiry.findById(inquiryId).populate([{path :'property', select : 'title'}]);
+    if(!inquiry){
+      return res.status(404).json({message : "Property not found..!!"});
+    }
+
+    res.status(200).json({inquiry});
+  }
+  catch(err){
+    return res.status(404).json(err.message)
+  }
+}
+
+
 module.exports = {
   addProperty,
   getProperties,
@@ -162,6 +181,7 @@ module.exports = {
   deleteListing,
   searchListing,
   submitInquiry,
-  getInquiries
+  getInquiries,
+  getInquiry
  
 };

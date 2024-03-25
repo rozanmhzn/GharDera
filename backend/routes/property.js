@@ -7,7 +7,8 @@ const {
   deleteListing,
   searchListing,
   submitInquiry,
-  getInquiries
+  getInquiries,
+  getInquiry
 } = require("../controllers/propertyController");
 const { verifyToken, authorizeRole } = require("../controllers/userController");
 
@@ -46,3 +47,5 @@ router.delete('/admin/property/:id',verifyToken, authorizeRole("admin") ,deleteL
 //route for getting all inquiries
 router.get('/admin/inquiries',verifyToken,authorizeRole("admin") ,getInquiries);
 
+//route for getting individual inquiry
+router.get('/admin/inquiry/:id',verifyToken,authorizeRole("admin") , getInquiry);
