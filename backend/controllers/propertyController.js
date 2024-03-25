@@ -128,12 +128,28 @@ const searchListing = async (req, res) => {
   }
 };
 
+//inquiry form submission
+const submitInquiry = async (req, res) => {
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.status(404).json({ message: "Fill all required fields...!!" });
+  }
+  try {
+    const inquiry = await Inquiry.create(req.body);
+    res.status(200).json({ message: "Inquiry submitted" });
+  } catch (err) {
+    res.status(404).json(err.message);
+  }
+};
+
 module.exports = {
   addProperty,
   getProperties,
   getPropertyByID,
   updateListing,
   deleteListing,
-  searchListing
+  searchListing,
+  submitInquiry
  
 };

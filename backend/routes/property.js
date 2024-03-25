@@ -5,7 +5,8 @@ const {
   getPropertyByID,
   updateListing,
   deleteListing,
-  searchListing
+  searchListing,
+  submitInquiry
 } = require("../controllers/propertyController");
 const { verifyToken, authorizeRole } = require("../controllers/userController");
 
@@ -21,6 +22,8 @@ router.get('/user/properties/:id', getPropertyByID);
 //route for searching
 router.get('/search', searchListing)
 
+//route for submitting inquiry form
+router.post('/user/inquiry/', submitInquiry)
 
 
 //route for getting all properties
