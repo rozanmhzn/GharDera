@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const Property = require("../models/propertyModel");
 const Inquiry = require("../models/inquiryModel");
+const sendMail = require("../utils/email");
 
 
 //create a listing or post a property
@@ -172,6 +173,24 @@ const getInquiry = async (req, res)=>{
   }
 }
 
+//reply to inquiry
+const replyInquiry = async(req, res) =>{
+  try{
+const  {email, message} = req.body;
+    if(!message && !email){
+      return res.status(404).json({message : "Please fill required fields..!!"});
+    }
+    await sendMail({
+      email : email,
+      subject : "Reply to Inquiry..!!",
+      message : message
+    })
+    res.status(200).json({status : "success" ,message : "Inquiry replied..!!"});
+  }
+  catch(err){
+    return res.status(404).json(err.message);
+  }
+}
 
 module.exports = {
   addProperty,
@@ -182,6 +201,7 @@ module.exports = {
   searchListing,
   submitInquiry,
   getInquiries,
-  getInquiry
+  getInquiry,
+  replyInquiry
  
 };

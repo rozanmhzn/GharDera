@@ -8,7 +8,8 @@ const {
   searchListing,
   submitInquiry,
   getInquiries,
-  getInquiry
+  getInquiry,
+  replyInquiry
 } = require("../controllers/propertyController");
 const { verifyToken, authorizeRole } = require("../controllers/userController");
 
@@ -49,3 +50,8 @@ router.get('/admin/inquiries',verifyToken,authorizeRole("admin") ,getInquiries);
 
 //route for getting individual inquiry
 router.get('/admin/inquiry/:id',verifyToken,authorizeRole("admin") , getInquiry);
+
+//route for replying to inquiry
+router.post('/admin/inquiry/reply',verifyToken,authorizeRole("admin") , replyInquiry);
+
+module.exports = router;
