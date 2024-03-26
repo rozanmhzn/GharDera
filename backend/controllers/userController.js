@@ -251,14 +251,28 @@ const forgotPassword = async (req, res) => {
     }
 
     //Generating reset Token
-    const resetToken = jwt.sign({ email: email }, SecretKey, {
-      expiresIn: "1h",
-    });
+    const resetToken = jwt.sign(
+      { email: email},
+      SecretKey,
+      { expiresIn: "1h" }
+    );
     console.log(resetToken);
 
-    res.status(200).json({ message: "Reset Link have been sent on email." });
+    const resetURL = `${req.protocol}://localhost:3000/resetpassword/${resetToken}`;
+    const message = `We got a request to reset your password. Please click the link below to reset your password.\n\n
+    ${resetURL}\n\n\n This link will expire on 1 hour.`
+
+
+      await sendMail({
+        email : email,
+        subject : `Reset Your Password..!!`,
+        message : message
+  
+      });
+    
+    res.status(200).json({status : "success", message: "Reset Link have been sent on email." });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+   return res.status(400).json({ error: err.message });
   }
 };
 
