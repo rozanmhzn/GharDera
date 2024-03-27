@@ -41,8 +41,26 @@ const getBookings = async (req, res) => {
   }
 };
 
+//for user get all individual bookings
+const getUserBooking = async (req, res) => {
+  const userID = req.params.id;
+  if (!userID) {
+    return res.status(404).json({ message: "Authentication required..!!" });
+  }
+
+  try {
+    const booking = await TourDate.find({ bookedBy: userID })
+      .populate({ path: "bookedBy", select: "fullname" })
+      .populate({ path: "property", select: "title" });
+
+    res.status(200).json({ booking });
+  } catch (err) {
+    res.status(404).json(err.message);
+  }
+};
 
 module.exports = {
     bookTour,
-    getBookings
+    getBookings,
+    getUserBooking
 }

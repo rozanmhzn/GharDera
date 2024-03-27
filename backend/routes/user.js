@@ -18,7 +18,7 @@ const {
   resetPassword,
 } = require("../controllers/userController");
 
-const { bookTour, getBookings } = require("../controllers/userInteractionController");
+const { bookTour, getBookings, getUserBooking } = require("../controllers/userInteractionController");
 
 const router = express.Router();
 
@@ -65,6 +65,9 @@ router.post("/user/reset-password", resetPassword);
 
 //property tour date booking route
 router.post("/book-tour", verifyToken, bookTour);
+
+//route for geting tour date for user
+router.get("/user/:id/bookings/", verifyToken, authorizeRole('user'), getUserBooking)
 
 ///////
 
