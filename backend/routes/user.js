@@ -18,26 +18,28 @@ const {
   resetPassword,
 } = require("../controllers/userController");
 
+const { bookTour } = require("../controllers/userInteractionController");
+
 const router = express.Router();
 
 /**Routes for authentication and registration */
 
 //login routes
-router.post("/login", loginUser); 
+router.post("/login", loginUser);
 
 //signup routes
-router.post("/signup", signupUser); 
+router.post("/signup", signupUser);
 
 //logout route
-router.post("/logout", verifyToken, logoutUser); 
+router.post("/logout", verifyToken, logoutUser);
 
 /*Routes for regular user*/
 
 //Get profile information for user
-router.get("/user/profile", verifyToken, authorizeRole("user"), profile); 
+router.get("/user/profile", verifyToken, authorizeRole("user"), profile);
 
 //router for updating profile for user
-router.put("/user/profile", verifyToken, authorizeRole("user"), updateProfile); 
+router.put("/user/profile", verifyToken, authorizeRole("user"), updateProfile);
 
 //Change password route for user
 router.put(
@@ -45,7 +47,7 @@ router.put(
   verifyToken,
   authorizeRole("user"),
   changePassword
-); 
+);
 
 //delete User route for user
 router.delete(
@@ -53,20 +55,23 @@ router.delete(
   verifyToken,
   authorizeRole("user"),
   deleteUser
-); 
+);
 
 //Forgot password route for user
-router.post("/user/forgot-password", forgotPassword); 
+router.post("/user/forgot-password", forgotPassword);
 
 //reset password route for user
-router.post("/user/reset-password", resetPassword); 
+router.post("/user/reset-password", resetPassword);
+
+//property tour date booking route
+router.post("/book-tour", verifyToken, bookTour);
 
 ///////
 
 /*Routes for admin user*/
 
 //getAllUser route for admin
-router.get("/admin/users", verifyToken, authorizeRole("admin"), getAllUsers); 
+router.get("/admin/users", verifyToken, authorizeRole("admin"), getAllUsers);
 
 //get single user route for admin
 router.get(
@@ -74,10 +79,10 @@ router.get(
   verifyToken,
   authorizeRole("admin"),
   getUserbyID
-); 
+);
 
 //update users detail for admin
-router.put("/admin/users/:id", verifyToken, authorizeRole("admin"), updateUser); 
+router.put("/admin/users/:id", verifyToken, authorizeRole("admin"), updateUser);
 
 //delete User route for admin
 router.delete(
@@ -85,7 +90,7 @@ router.delete(
   verifyToken,
   authorizeRole("admin"),
   deleteUser
-); 
+);
 
 //Change password route for admin
 router.put(
@@ -93,6 +98,6 @@ router.put(
   verifyToken,
   authorizeRole("admin"),
   changePassword
-); 
+);
 
 module.exports = router;

@@ -9,6 +9,8 @@ const app = express();
 
 const userRoutes = require("../routes/user");
 
+const propertyRoutes = require("../routes/property");
+
 const port = process.env.PORT;
 
 const dbURL = process.env.DB_URL;
