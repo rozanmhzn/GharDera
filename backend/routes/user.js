@@ -18,7 +18,7 @@ const {
   resetPassword,
 } = require("../controllers/userController");
 
-const { bookTour } = require("../controllers/userInteractionController");
+const { bookTour, getBookings } = require("../controllers/userInteractionController");
 
 const router = express.Router();
 
@@ -99,5 +99,8 @@ router.put(
   authorizeRole("admin"),
   changePassword
 );
+
+//get all property booking route
+router.get("/admin/bookings",verifyToken, authorizeRole("admin") , getBookings)  
 
 module.exports = router;
