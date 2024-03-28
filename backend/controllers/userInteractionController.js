@@ -59,8 +59,23 @@ const getUserBooking = async (req, res) => {
   }
 };
 
+//for admin get each booking
+const getBooking = async (req, res) => {
+  const bookingID = req.params.id;
+  try {
+    const booking = await Booking.findById(bookingID)
+      .populate({ path: "bookedBy", select: ["fullname", "email"] })
+      .populate({ path: "property", select: "title" });
+
+    res.status(200).json({ booking });
+  } catch (err) {
+    return res.status(404).json(err.message);
+  }
+};
+
 module.exports = {
     bookTour,
     getBookings,
-    getUserBooking
+    getUserBooking,
+    getBooking
 }
