@@ -73,9 +73,39 @@ const getBooking = async (req, res) => {
   }
 };
 
+//for admin confirm each bookings
+const confirmBooking = async (req, res) => {
+  const bookingID = req.params.id;
+  const { email, status, date } = req.body;
+
+  try {
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      bookingID,
+      { $set: { status: status } },
+      { new: true }
+    );
+
+    await sendMail({
+      email: email,
+      subject: "Confirmation on Property Tour Date Booking..!!",
+      message: `We've confirmed your tour date for ${date}..!!\n\nThank You..!!`,
+    });
+
+    res.status(200).json({
+      updatedBooking,
+      status: "Success",
+      message: "Booking Confirmed.",
+    });
+    //res.send("Booking done.!");
+  } catch (err) {
+    return res.status(404).json(err.message);
+  }
+};
+
 module.exports = {
     bookTour,
     getBookings,
     getUserBooking,
-    getBooking
+    getBooking,
+    confirmBooking
 }
