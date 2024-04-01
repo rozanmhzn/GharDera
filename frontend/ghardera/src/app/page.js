@@ -10,11 +10,9 @@ export default function Home() {
     <div>
       {/*Main Body*/}
       <main>
-        <Navbar/>
         <HeroSection />
         <CategorySection/>
         <LatestProperties/>
-        <Footer/>
       </main>
     </div>
   );
