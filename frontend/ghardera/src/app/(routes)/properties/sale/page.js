@@ -1,9 +1,13 @@
-import React from 'react'
+"use client";
 
-const Sale = () => {
+import Contents from "@/components/common/Contents";
+
+import { propertyDetails } from "@/utils/constant/propertyDetails";
+
+export default function Sale() {
   return (
-    <div>Sale</div>
-  )
+    <>
+      <Contents name={"Sale"} propertyDetails={propertyDetails} />
+    </>
+  );
 }
-
-export default Sale

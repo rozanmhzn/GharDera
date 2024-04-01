@@ -6,7 +6,7 @@ import { Button, Select, TextInput, rem } from "@mantine/core";
 const PropertyLayout = ({ children }) => {
 
   return (
-    <section className="w-[100vw] px-20">
+    <section className="w-full px-20">
       <div className="">
         
           <div className="flex justify-start items-center gap-2  my-4">
