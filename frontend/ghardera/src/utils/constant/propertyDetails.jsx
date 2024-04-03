@@ -59,11 +59,11 @@ export const propertyDetails = [
     price: "Rs. 20000000",
     slug: "property-4",
   },
-  // {
-  //   name: "Chomrong Dada, Annapurna Height",
-  //   img: pr1,
-  //   address: "Annapurna height, Chomrong",
-  //   price: "Rs. 20000000",
-  //   slug: "chomrong-data,-annapurna-height",
-  // },
+  {
+    name: "Chomrong Dada, Annapurna Height",
+    img: pr1,
+    address: "Annapurna height, Chomrong",
+    price: "Rs. 20000000",
+    slug: "chomrong-data,-annapurna-height",
+  },
 ];
