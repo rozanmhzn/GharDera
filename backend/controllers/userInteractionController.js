@@ -1,4 +1,4 @@
-const TourDate = require("../models/bookingModel");
+const {TourDate, savedProperty} = require("../models/bookingModel");
 const Property = require("../models/propertyModel");
 
 
@@ -102,10 +102,35 @@ const confirmBooking = async (req, res) => {
   }
 };
 
+//for saving favourite properties
+const addFavourites = async (req, res) => {
+  const userID = req.user;
+  const {propertyID} = req.body;
+ // console.log(userID);
+ // console.log(propertyID);
+
+  if (!userID) {
+    return res.status(404).json({ message: "Authentication required..!!" });
+  }
+
+  try {
+    const favourite = new savedProperty({
+      savedBy: userID,
+      property: propertyID,
+    });
+    await savedProperty.create(favourite);
+
+    res.status(200).json({ favourite });
+  } catch (err) {
+    return res.status(404).json(err.message);
+  }
+};
+
 module.exports = {
     bookTour,
     getBookings,
     getUserBooking,
     getBooking,
-    confirmBooking
+    confirmBooking,
+    addFavourites
 }

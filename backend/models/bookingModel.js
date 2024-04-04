@@ -19,6 +19,16 @@ const tourBookingSchema = new Schema({
   },
 });
 
-const TourDate = mongoose.model("TourDate", tourBookingSchema);
+const savedSchema = new Schema({
+  savedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  property: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Property",
+    required: true,
+  },
+});
 
-module.exports = { TourDate };
+const TourDate = mongoose.model("TourDate", tourBookingSchema);
+const savedProperty = mongoose.model("Favourites", savedSchema);
+
+module.exports = { TourDate, savedProperty };
