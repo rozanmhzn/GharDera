@@ -18,7 +18,7 @@ const {
   resetPassword,
 } = require("../controllers/userController");
 
-const { bookTour, getBookings, getUserBooking, getBooking, confirmBooking, addFavourites } = require("../controllers/userInteractionController");
+const { bookTour, getBookings, getUserBooking, getBooking, confirmBooking, addFavourites, getFavourites } = require("../controllers/userInteractionController");
 
 const router = express.Router();
 
@@ -71,6 +71,9 @@ router.get("/user/:id/bookings/", verifyToken, authorizeRole('user'), getUserBoo
 
 //route for saving propertes 
 router.post("/user/favourites",verifyToken, authorizeRole("user") ,addFavourites);
+
+//route for getting saved properties
+router.get("/user/favourites", verifyToken, authorizeRole("user"), getFavourites);
 
 
 ///////

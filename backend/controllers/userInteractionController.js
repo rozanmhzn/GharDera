@@ -126,11 +126,28 @@ const addFavourites = async (req, res) => {
   }
 };
 
+//for getting saved properties
+const getFavourites = async (req, res) => {
+  const userID = req.user;
+  try {
+    const favProps = await savedProperty
+      .find({ savedBy: userID })
+      .populate([{ path: "property", select: "title" }]);
+
+      res.status(200).json({favProps});
+  } 
+  catch (err) {
+    return res.status(404).json(err.message);
+  }
+};
+
+
 module.exports = {
     bookTour,
     getBookings,
     getUserBooking,
     getBooking,
     confirmBooking,
-    addFavourites
+    addFavourites,
+    getFavourites
 }
