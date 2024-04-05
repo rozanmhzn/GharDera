@@ -18,7 +18,7 @@ const {
   resetPassword,
 } = require("../controllers/userController");
 
-const { bookTour, getBookings, getUserBooking, getBooking, confirmBooking, addFavourites, getFavourites } = require("../controllers/userInteractionController");
+const { bookTour, getBookings, getUserBooking, getBooking, confirmBooking, addFavourites, getFavourites, deleteFavourites } = require("../controllers/userInteractionController");
 
 const router = express.Router();
 
@@ -74,6 +74,9 @@ router.post("/user/favourites",verifyToken, authorizeRole("user") ,addFavourites
 
 //route for getting saved properties
 router.get("/user/favourites", verifyToken, authorizeRole("user"), getFavourites);
+
+//route for deleting saved properties
+router.delete("/user/favourites", verifyToken, authorizeRole("user"), deleteFavourites);
 
 
 ///////

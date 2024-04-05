@@ -141,6 +141,20 @@ const getFavourites = async (req, res) => {
   }
 };
 
+//for deleting saved properties
+const deleteFavourites = async (req, res) =>{
+  const userID = req.user;
+  const {propertyID} = req.body;
+  try{
+    await savedProperty.deleteOne({savedBy : userID , property : propertyID})
+    res.status(200).json({message : "Removed favorite property..!!"})
+    
+  }
+  catch (err) {
+    return res.status(404).json(err.message);
+  }
+
+}
 
 module.exports = {
     bookTour,
@@ -149,5 +163,6 @@ module.exports = {
     getBooking,
     confirmBooking,
     addFavourites,
-    getFavourites
+    getFavourites,
+    deleteFavourites
 }
