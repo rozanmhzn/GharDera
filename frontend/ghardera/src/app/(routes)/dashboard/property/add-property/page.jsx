@@ -1,21 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import {
   Breadcrumbs,
   NativeSelect,
   TextInput,
   Textarea,
-  Button,Input,
-  Radio
+  Button,
+  Input,
+  Radio,
 } from "@mantine/core";
 import Link from "next/link";
-import { useForm, Controller, } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import FeatherIcon from "feather-icons-react";
 import ColoredLine from "@/components/common/ColoredLine";
-
-import axios from "axios";
-
+import ImageDropzone from "@/components/ImageDropzone";
 
 const items = [
   { title: "Property", href: "/dashboard/property" },
@@ -33,26 +32,24 @@ const newItems = items.map((item, index) => (
   </Link>
 ));
 
-
 const AddProperty = () => {
-
+  const ref = useRef(null);
 
   const {
     control,
     formState: { errors },
     handleSubmit,
     setValue,
-    getValues
+    getValues,
   } = useForm({
-    defaultValues: {
-    },
+    defaultValues: {},
   });
 
   const onSubmit = async (data) => {
     //console.log("thik")
-   // console.log(data.propertyAddress)
+    // console.log(data.propertyAddress)
     console.log(data);
-  }
+  };
 
   return (
     <>
@@ -616,10 +613,7 @@ const AddProperty = () => {
                           >
                             <div className="flex gap-10 mt-2">
                               <Radio value="true" label="Negotiable" />
-                              <Radio
-                                value="false"
-                                label="Non-Negotiable"
-                              />
+                              <Radio value="false" label="Non-Negotiable" />
                             </div>
                           </Radio.Group>
                         </>
@@ -656,6 +650,33 @@ const AddProperty = () => {
             <ColoredLine color={"#C7C7C7"} />
           </div>
 
+          {/* Property Image upload Section */}
+          <div className="mt-5 flex">
+            <div className="w-2/5">
+              <span className="text-lg font-medium">Property Image</span>
+            </div>
+            <div className="w-full">
+              <div className="">
+                <Controller
+                  control={control}
+                  name="ImagesURL"
+                  rules={{ required: "required" }}
+                  render={({ field }) => (
+                    <ImageDropzone
+                      {...field}
+                      className="border-dashed border-2 border-gray-500 rounded-3xl p-20
+                    grid justify-items-center cursor-pointer"
+                      error={errors.ImagesURL?.message}
+                      control={control}
+                      name="ImagesURL"
+                      setValue={setValue}
+                      ref={ref}
+                    />
+                  )}
+                />
+              </div>
+            </div>
+          </div>
         </form>
       </div>
     </>
