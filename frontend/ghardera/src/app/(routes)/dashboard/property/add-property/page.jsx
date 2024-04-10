@@ -34,6 +34,15 @@ const newItems = items.map((item, index) => (
 
 const AddProperty = () => {
   const ref = useRef(null);
+const handleIncrement = (fieldName) => {
+  const currentValue = Number(getValues(fieldName));
+  setValue(fieldName, currentValue + 1);
+};
+
+const handleDecrement = (fieldName) => {
+  const currentValue = Number(getValues(fieldName));
+  setValue(fieldName, currentValue > 0 ? currentValue - 1 : 0);
+};
 
   const {
     control,
@@ -677,6 +686,87 @@ const AddProperty = () => {
               </div>
             </div>
           </div>
+
+          <div className="mt-5">
+            <ColoredLine color={"#C7C7C7"} />
+          </div>
+
+          {/* Owner Details section */}
+          <div className="mt-5 flex">
+            <div className="w-2/5">
+              <span className="text-lg font-medium">Owner Details</span>
+            </div>
+            <div className="w-full">
+              {/* Fullname section */}
+              <div className="w-80">
+                <label className="text-ld font-medium">Full Name </label>
+                <div className="mt-2">
+                  <Controller
+                    control={control}
+                    name={"ownerName"}
+                    rules={{ required: "required" }}
+                    render={({ field }) => (
+                      <>
+                        <TextInput
+                          {...field}
+                          placeholder="Fullname"
+                          error={errors.ownerName?.message}
+                        />
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+              {/* Number section */}
+              <div className="w-80 mt-2">
+                <label className="text-ld font-medium">Contact Number </label>
+                <div className="mt-2">
+                  <Controller
+                    control={control}
+                    name={"ownerNumber"}
+                    rules={{ required: "required" }}
+                    render={({ field }) => (
+                      <>
+                        <TextInput
+                          {...field}
+                          leftSection={
+                            <span className="text-lg font-bold">NP</span>
+                          }
+                          placeholder="9800000000"
+                          error={errors.ownerNumber?.message}
+                        />
+                      </>
+                    )}
+                  />
+                </div>
+                {/* //Hidden input Div */}
+                <Controller
+                  control={control}
+                  name={"userRef"}
+                  rules={{ required: "required" }}
+                  render={({ field }) => (
+                    <>
+                      <TextInput
+                        {...field}
+                        value="Rojan Admin"
+                        error={errors.userRef?.message}
+                      />
+                    </>
+                  )}
+                />
+                <div className="mt-10 flex items-center justify-between">
+                  <Button color="rgba(110, 110, 110, 1)" size="md" radius={4}>
+                    Discard
+                  </Button>
+                  <Button type="submit" color="#235789" radius={4} size="md">
+                    Submit
+                  </Button>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+
         </form>
       </div>
     </>
