@@ -1,16 +1,17 @@
 "use client";
 
+const { RxFace } = require("react-icons/rx");
+
+import React from "react";
 import { Button, TextInput, NativeSelect } from "@mantine/core";
 import FeatherIcon from "feather-icons-react";
 import Link from "next/link";
-import React from "react";
 
 import { propertyDetails } from "@/utils/constant/propertyDetails";
 import Image from "next/image";
 
 
 const Property = () => {
-
 
   return (
     <>
@@ -137,3 +138,5 @@ const Property = () => {
 };
 
 export default Property;
+
+
