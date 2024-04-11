@@ -8,6 +8,18 @@ import { BsChat } from "react-icons/bs";
 import axios from "axios";
 
 const TourRequest = () => {
+
+     const [currentPage, setCurrentPage] = useState(1);
+     const itemsPerPage = 5; // Change this value to adjust the number of items per page
+
+     const indexOfLastItem = currentPage * itemsPerPage;
+     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+     const currentItems = bookingData.slice(
+       indexOfFirstItem,
+       indexOfLastItem
+     );
+
+     const paginate = (pageNumber) => setCurrentPage(pageNumber);
  
   return (
     <>
@@ -58,7 +70,7 @@ const TourRequest = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-sm text-black font-normal">
-              {bookingData?.map((item, index) => (
+              {currentItems.map((item, index) => (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-no-wrap">{index + 1}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">
@@ -67,9 +79,7 @@ const TourRequest = () => {
                       <div className="ml-2">{item.name}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-no-wrap">
-                    {item.email}
-                  </td>
+                  <td className="px-6 py-4 whitespace-no-wrap">{item.email}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">
                     {item.contact}
                   </td>
@@ -84,7 +94,6 @@ const TourRequest = () => {
                       <Button size="xs" color="#235789">
                         Confirm & Mail
                       </Button>
-                     
                     </div>
                   </td>
                 </tr>
@@ -93,7 +102,31 @@ const TourRequest = () => {
           </table>
         </div>
       </div>
-      
+
+      {/* Pagination */}
+      <div className="flex justify-end mt-5 mr-10 mb-5">
+        <nav className="flex justify-center">
+          <ul className="flex">
+            {Array.from(
+              { length: Math.ceil(bookingData.length / itemsPerPage) },
+              (_, i) => (
+                <li key={i}>
+                  <button
+                    className={`mx-1 px-3 py-1 rounded ${
+                      currentPage === i + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-black"
+                    }`}
+                    onClick={() => paginate(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                </li>
+              )
+            )}
+          </ul>
+        </nav>
+      </div>
     </>
   );
 };

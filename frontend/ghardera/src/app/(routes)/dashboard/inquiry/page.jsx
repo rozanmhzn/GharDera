@@ -7,6 +7,15 @@ import { inquiryData } from "@/utils/constant/inquiryData";
 import { BsChat } from "react-icons/bs";
 
 const Inquiy = () => {
+
+   const [currentPage, setCurrentPage] = useState(1);
+   const itemsPerPage = 5; // Change this value to adjust the number of items per page
+
+   const indexOfLastItem = currentPage * itemsPerPage;
+   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+   const currentItems = inquiryData.slice(indexOfFirstItem, indexOfLastItem);
+
+   const paginate = (pageNumber) => setCurrentPage(pageNumber);
  
   return (
     <>
@@ -43,12 +52,12 @@ const Inquiy = () => {
                   Email
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
-                    Contact
+                  Contact
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
                   Inquiry
                 </th>
-                
+
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
                   Actions
                 </th>
@@ -71,7 +80,6 @@ const Inquiy = () => {
                   <td className="px-6 py-4 whitespace-no-wrap">
                     {item.message}
                   </td>
-                  
 
                   <td className="px-6 py-4 whitespace-no-wrap">
                     <div
@@ -92,7 +100,30 @@ const Inquiy = () => {
           </table>
         </div>
       </div>
-    
+      {/* Pagination */}
+      <div className="flex justify-end mt-5 mr-10 mb-5">
+        <nav className="flex justify-center">
+          <ul className="flex">
+            {Array.from(
+              { length: Math.ceil(inquiryData.length / itemsPerPage) },
+              (_, i) => (
+                <li key={i}>
+                  <button
+                    className={`mx-1 px-3 py-1 rounded ${
+                      currentPage === i + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-black"
+                    }`}
+                    onClick={() => paginate(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                </li>
+              )
+            )}
+          </ul>
+        </nav>
+      </div>
     </>
   );
 };

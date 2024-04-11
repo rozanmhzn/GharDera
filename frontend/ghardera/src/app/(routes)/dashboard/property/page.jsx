@@ -2,7 +2,7 @@
 
 const { RxFace } = require("react-icons/rx");
 
-import React from "react";
+import React, {useState} from "react";
 import { Button, TextInput, NativeSelect } from "@mantine/core";
 import FeatherIcon from "feather-icons-react";
 import Link from "next/link";
@@ -12,6 +12,15 @@ import Image from "next/image";
 
 
 const Property = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Change this value to adjust the number of items per page
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = propertyDetails.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
 
   return (
     <>
@@ -87,7 +96,7 @@ const Property = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-sm text-black font-normal">
-              {propertyDetails?.map((item, index) => (
+              {currentItems.map((item, index) => (
                 <tr key={index} onClick={() => console.log(index)}>
                   <td className="px-6 py-4 whitespace-no-wrap">{index + 1}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">
@@ -102,9 +111,7 @@ const Property = () => {
                   <td className="px-6 py-4 whitespace-no-wrap">
                     {"2024-01-32"}
                   </td>
-                  <td className="px-6 py-4 whitespace-no-wrap">
-                    {"Ghardera"}
-                  </td>
+                  <td className="px-6 py-4 whitespace-no-wrap">{"Ghardera"}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">
                     {item.status === "Available" ? (
                       <div className="bg-lime-300 flex justify-items-center p-2 rounded-3xl text-green-700 font-bold">
@@ -132,6 +139,31 @@ const Property = () => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-end mt-5 mr-10 mb-5">
+        <nav className="flex justify-center">
+          <ul className="flex">
+            {Array.from(
+              { length: Math.ceil(propertyDetails.length / itemsPerPage) },
+              (_, i) => (
+                <li key={i}>
+                  <button
+                    className={`mx-1 px-3 py-1 rounded ${
+                      currentPage === i + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-black"
+                    }`}
+                    onClick={() => paginate(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                </li>
+              )
+            )}
+          </ul>
+        </nav>
       </div>
     </>
   );

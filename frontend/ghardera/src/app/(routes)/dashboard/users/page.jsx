@@ -1,10 +1,8 @@
 "use client";
 
-import React from "react";
+import React, {useState} from "react";
 import {
-  NativeSelect,
-  Pagination,
-  
+  NativeSelect,  
   Button,
 
 } from "@mantine/core";
@@ -58,6 +56,15 @@ const users = [
 
 const Users = () => {
 
+   const [currentPage, setCurrentPage] = useState(1);
+   const itemsPerPage = 5; // Change this value to adjust the number of items per page
+
+   const indexOfLastItem = currentPage * itemsPerPage;
+   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+   const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
+
+   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     const [opened, { open, close }] = useDisclosure(false);
 
   return (
@@ -108,7 +115,7 @@ const Users = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((item, index) => (
+              {currentItems.map((item, index) => (
                 <tr key={index} onClick={() => console.log(index)}>
                   <td className="px-6 py-4 whitespace-no-wrap">{index + 1}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">{item.name}</td>
@@ -143,16 +150,14 @@ const Users = () => {
                       {/* <Button onClick={open}>Edit</Button>
                       <Button color="red">Delete</Button> */}
                       <div>
-
-                      <Button variant="transparent" color="blue" >
-                        {<FeatherIcon icon="edit" size={18}/>}
-                      </Button>
+                        <Button variant="transparent" color="blue">
+                          {<FeatherIcon icon="edit" size={18} />}
+                        </Button>
                       </div>
                       <div>
-
-                      <Button variant="transparent" color="red">
-                        {<FeatherIcon icon="trash-2" size={18}/>}
-                      </Button>
+                        <Button variant="transparent" color="red">
+                          {<FeatherIcon icon="trash-2" size={18} />}
+                        </Button>
                       </div>
                     </div>
                   </td>
@@ -161,14 +166,31 @@ const Users = () => {
             </tbody>
           </table>
         </div>
-        <div className="mt-5 flex justify-between items-center">
-          <div>
-            <span>Showing 5 out of 20 users</span>
-          </div>
-          <div>
-            <Pagination total={5} />
-          </div>
-        </div>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-end mt-5 mr-10 mb-5">
+        <nav className="flex justify-center">
+          <ul className="flex">
+            {Array.from(
+              { length: Math.ceil(users.length / itemsPerPage) },
+              (_, i) => (
+                <li key={i}>
+                  <button
+                    className={`mx-1 px-3 py-1 rounded ${
+                      currentPage === i + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-black"
+                    }`}
+                    onClick={() => paginate(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                </li>
+              )
+            )}
+          </ul>
+        </nav>
       </div>
     </>
   );
