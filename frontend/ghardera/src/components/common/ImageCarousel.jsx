@@ -47,7 +47,7 @@ const ImageCarousel = ({ images }) => {
                 <figure className="w-[47rem] h-96 relative">
                   <Image
                     alt="Property Image"
-                    src={data?.image}
+                    src={data}
                     fill
                     className="rounded-3xl object-cover"
                   />
