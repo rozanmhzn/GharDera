@@ -1,26 +1,60 @@
 "use client";
 
-const { RxFace } = require("react-icons/rx");
-
-import React, {useState} from "react";
 import { Button, TextInput, NativeSelect } from "@mantine/core";
 import FeatherIcon from "feather-icons-react";
 import Link from "next/link";
-
-import { propertyDetails } from "@/utils/constant/propertyDetails";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { APIDeleteProperty, APIGetAllProperty } from "@/apis/Property";
 
 const Property = () => {
+  const [data, setData] = useState(null);
+  const [refreshUI, setRefreshUI] = useState(false);
+
+  const router = useRouter();
+
+
+  const fetchData = async () => {
+    try {
+      const res = await APIGetAllProperty();
+      if (res) {
+        setData(res);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [refreshUI]);
+
+
+  const deleteProperty = async (slug) => {
+    console.log(slug);
+    try {
+      const res = await APIDeleteProperty(slug);
+      if (res) {
+        toast.success(res.message);
+        setRefreshUI(true);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error);
+    }
+  };
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // Change this value to adjust the number of items per page
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = propertyDetails.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
 
   return (
     <>
@@ -96,22 +130,32 @@ const Property = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-sm text-black font-normal">
-              {currentItems.map((item, index) => (
-                <tr key={index} onClick={() => console.log(index)}>
+              {currentItems?.map((item, index) => (
+                <tr
+                  key={index}
+                  //                  onClick={() => console.log()}
+                >
                   <td className="px-6 py-4 whitespace-no-wrap">{index + 1}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">
                     <div className="flex items-center">
-                      <Image src={item.img} width={50} height={50} />
-                      <div className="ml-2">{item.name}</div>
+                      <Image
+                        src={item.ImagesURL[0]}
+                        width={50}
+                        height={50}
+                        alt="asd"
+                      />
+                      <div className="ml-2">{item.propertyTitle}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-no-wrap">
-                    {item.address}
+                    {item.propertyAddress.city}
                   </td>
                   <td className="px-6 py-4 whitespace-no-wrap">
-                    {"2024-01-32"}
+                    {item.createdAt}
                   </td>
-                  <td className="px-6 py-4 whitespace-no-wrap">{"Ghardera"}</td>
+                  <td className="px-6 py-4 whitespace-no-wrap">
+                    {item.ownerName}
+                  </td>
                   <td className="px-6 py-4 whitespace-no-wrap">
                     {item.status === "Available" ? (
                       <div className="bg-lime-300 flex justify-items-center p-2 rounded-3xl text-green-700 font-bold">
@@ -129,9 +173,15 @@ const Property = () => {
                       <FeatherIcon
                         icon="edit-2"
                         size={20}
-                        onClick={() => console.log(item?._id)}
+                        className="cursor-pointer"
+                       
                       />
-                      <FeatherIcon icon="trash-2" size={20} />
+                      <FeatherIcon
+                        icon="trash-2"
+                        size={20}
+                        className="cursor-pointer"
+                        onClick={() => deleteProperty(item._id)}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -146,7 +196,7 @@ const Property = () => {
         <nav className="flex justify-center">
           <ul className="flex">
             {Array.from(
-              { length: Math.ceil(propertyDetails.length / itemsPerPage) },
+              { length: Math.ceil(data?.length / itemsPerPage) },
               (_, i) => (
                 <li key={i}>
                   <button
@@ -170,5 +220,3 @@ const Property = () => {
 };
 
 export default Property;
-
-
