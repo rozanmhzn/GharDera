@@ -11,10 +11,13 @@ import {
   Radio,
 } from "@mantine/core";
 import Link from "next/link";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, } from "react-hook-form";
 import FeatherIcon from "feather-icons-react";
 import ColoredLine from "@/components/common/ColoredLine";
 import ImageDropzone from "@/components/ImageDropzone";
+import { toast } from "react-toastify";
+import { APIAddProperty } from "@/apis/Property";
+import { useRouter } from "next/navigation";
 
 const items = [
   { title: "Property", href: "/dashboard/property" },
@@ -33,16 +36,18 @@ const newItems = items.map((item, index) => (
 ));
 
 const AddProperty = () => {
+  const router = useRouter();
   const ref = useRef(null);
-const handleIncrement = (fieldName) => {
-  const currentValue = Number(getValues(fieldName));
-  setValue(fieldName, currentValue + 1);
-};
 
-const handleDecrement = (fieldName) => {
-  const currentValue = Number(getValues(fieldName));
-  setValue(fieldName, currentValue > 0 ? currentValue - 1 : 0);
-};
+  const handleIncrement = (fieldName) => {
+    const currentValue = Number(getValues(fieldName));
+    setValue(fieldName, currentValue + 1);
+  };
+
+  const handleDecrement = (fieldName) => {
+    const currentValue = Number(getValues(fieldName));
+    setValue(fieldName, currentValue > 0 ? currentValue - 1 : 0);
+  };
 
   const {
     control,
@@ -51,13 +56,53 @@ const handleDecrement = (fieldName) => {
     setValue,
     getValues,
   } = useForm({
-    defaultValues: {},
+    defaultValues: {
+      propertyTitle: "",
+      propertyStatus: "",
+      propertyType: "",
+      propertyCategory: "",
+      propertyAddress: {
+        street: "",
+        city: "",
+        province: "",
+      },
+      propertyDescription: "",
+      bedRooms: "0",
+      kitchens: "0",
+      bathroom: "0",
+      parking: "0",
+      propertyFace: "",
+      roadAccess: "",
+      floors: "0",
+      propertyArea: "",
+      propertyPrice: "",
+      negotiable: "",
+      ownerName: "",
+      ownerNumber: "",
+      ImagesURL: [],
+      userRef: "",
+      propertyFeature: [
+        "Parking",
+        "Garage",
+        "Water Supply",
+        "Wifi",
+        "Solar-Panel",
+      ],
+    },
   });
 
   const onSubmit = async (data) => {
-    //console.log("thik")
-    // console.log(data.propertyAddress)
     console.log(data);
+    try {
+      const res = await APIAddProperty(data);
+      if (res) {
+        toast.success(res.message);
+        router.push("/dashboard/property");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error);
+    }
   };
 
   return (
@@ -122,6 +167,7 @@ const handleDecrement = (fieldName) => {
                             error={errors.propertyType?.message}
                             rightSection={<FeatherIcon icon="chevron-down" />}
                             data={[
+                              { label: "Select", value: "" },
                               { label: "Residential", value: "residential" },
                               { label: "Commercial", value: "commercial" },
                             ]}
@@ -151,6 +197,7 @@ const handleDecrement = (fieldName) => {
                             error={errors.propertyCategory?.message}
                             rightSection={<FeatherIcon icon="chevron-down" />}
                             data={[
+                              { label: "Select", value: "" },
                               { label: "House", value: "house" },
                               { label: "Land", value: "land" },
                               { label: "Flat", value: "flat" },
@@ -170,7 +217,7 @@ const handleDecrement = (fieldName) => {
                   <div className="mt-2">
                     <Controller
                       control={control}
-                      name={"propertyAddress"}
+                      name={"propertyAddress.street"}
                       rules={{ required: "required" }}
                       render={({ field }) => (
                         <>
@@ -191,7 +238,7 @@ const handleDecrement = (fieldName) => {
                   <div className="mt-2">
                     <Controller
                       control={control}
-                      name={"propertyAddress"}
+                      name={"propertyAddress.city"}
                       rules={{ required: "required" }}
                       render={({ field }) => (
                         <>
@@ -211,7 +258,7 @@ const handleDecrement = (fieldName) => {
                   <div className="mt-2">
                     <Controller
                       control={control}
-                      name={"propertyAddress"}
+                      name={"propertyAddress.province"}
                       rules={{ required: "required" }}
                       render={({ field }) => (
                         <>
@@ -222,15 +269,16 @@ const handleDecrement = (fieldName) => {
                             error={errors.propertyAddress?.message}
                             rightSection={<FeatherIcon icon="chevron-down" />}
                             data={[
-                              { label: "Koshi", value: "koshi" },
-                              { label: "Madhesh", value: "madhesh" },
-                              { label: "Bagmati", value: "bagmati" },
-                              { label: "Gandaki", value: "gandaki" },
-                              { label: "Lumbini", value: "lumbini" },
-                              { label: "Karnali", value: "karnali" },
+                              { label: "Select", value: "" },
+                              { label: "Koshi", value: "Koshi" },
+                              { label: "Madhesh", value: "Madhesh" },
+                              { label: "Bagmati", value: "Bagmati" },
+                              { label: "Gandaki", value: "Gandaki" },
+                              { label: "Lumbini", value: "Lumbini" },
+                              { label: "Karnali", value: "Karnali" },
                               {
                                 label: "SudhurPaschim",
-                                value: "SudhurPaschim",
+                                value: "Sudhurpaschim",
                               },
                             ]}
                           />
@@ -468,23 +516,6 @@ const handleDecrement = (fieldName) => {
                 <div className="mt-5">
                   <label className="text-ld font-medium">No. of Parking </label>
                   <div className="mt-2 gap-3 flex text-lg font-semibold">
-                    {/* <Controller
-                      control={control}
-                      name={"parking"}
-                      rules={{ required: "required" }}
-                      render={({ field }) => (
-                        <>
-                          <Button variant="light">-</Button>
-                          <Input
-                            {...field}
-                            variant="unstyled"
-                            placeholder="3"
-                            value={5}
-                          />
-                          <Button variant="filled">+</Button>
-                        </>
-                      )}
-                    /> */}
                     <Button
                       variant="light"
                       onClick={() => handleDecrement("parking")}
@@ -532,6 +563,7 @@ const handleDecrement = (fieldName) => {
                             error={errors.propertyFace?.message}
                             rightSection={<FeatherIcon icon="chevron-down" />}
                             data={[
+                              { label: "Select", value: "" },
                               { label: "East", value: "east" },
                               { label: "West", value: "west" },
                               { label: "North", value: "north" },
@@ -558,17 +590,6 @@ const handleDecrement = (fieldName) => {
                             {...field}
                             placeholder="1050 sq. ft"
                             error={errors.propertyArea?.message}
-                            // rightSection={
-                            //   <NativeSelect
-                            //     rightSection={<FeatherIcon icon="chevron-down" />}
-                            //     data={[
-                            //       { label: "Aana", value: "aana" },
-                            //       { label: "Sq. Feet", value: "sq. ft" },
-                            //       { label: "Sq. Meter", value: "sq. mt" },
-                            //       { label: "Ropani", value: "ropani" },
-                            //     ]}
-                            //   />
-                            // }
                           />
                         </>
                       )}
@@ -743,13 +764,12 @@ const handleDecrement = (fieldName) => {
                 <Controller
                   control={control}
                   name={"userRef"}
-                  rules={{ required: "required" }}
+                  defaultValue="Rojan Admin"
                   render={({ field }) => (
                     <>
                       <TextInput
                         {...field}
                         value="Rojan Admin"
-                        error={errors.userRef?.message}
                       />
                     </>
                   )}
@@ -761,12 +781,10 @@ const handleDecrement = (fieldName) => {
                   <Button type="submit" color="#235789" radius={4} size="md">
                     Submit
                   </Button>
-                  
                 </div>
               </div>
             </div>
           </div>
-
         </form>
       </div>
     </>
