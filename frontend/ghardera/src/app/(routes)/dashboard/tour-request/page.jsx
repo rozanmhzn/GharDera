@@ -1,26 +1,57 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Button, TextInput } from "@mantine/core";
+import { Button, TextInput,  } from "@mantine/core";
 import FeatherIcon from "feather-icons-react";
-import { bookingData } from "@/utils/constant/bookingData";
-import { BsChat } from "react-icons/bs";
+import { GiConfirmed, GiCancel } from "react-icons/gi";
 import axios from "axios";
+import { APIConfirmTourRequest } from "@/apis/User";
+import { toast } from "react-toastify";
 
 const TourRequest = () => {
+  const [data, setData] = useState(null);
 
-     const [currentPage, setCurrentPage] = useState(1);
-     const itemsPerPage = 5; // Change this value to adjust the number of items per page
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios({
+          method: "GET",
+          url: `http://localhost:4000/api/user/admin/bookings`,
+        }).then((response) => {
+          // console.log(response.data);
+          setData(response.data);
+          //console.log(response.data)
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
 
-     const indexOfLastItem = currentPage * itemsPerPage;
-     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-     const currentItems = bookingData.slice(
-       indexOfFirstItem,
-       indexOfLastItem
-     );
+  const confirm = async (id, data) => {
+    // console.log(data)
+    try {
+      const res = await APIConfirmTourRequest(id, data);
+      toast.success(res.message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error);
+    }
+  };
 
-     const paginate = (pageNumber) => setCurrentPage(pageNumber);
- 
+  // const reject = (id) =>{
+  //   console.log(id)
+  // }
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Change this value to adjust the number of items per page
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
     <>
       {/* //top div */}
@@ -35,7 +66,6 @@ const TourRequest = () => {
             <TextInput
               placeholder="Search by Location, property Type"
               leftSection={<FeatherIcon icon="search" size={18} />}
-              // rightSection={<FeatherIcon icon='cross' size={18}/>}
             />
           </div>
         </div>
@@ -56,7 +86,7 @@ const TourRequest = () => {
                   Email
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
-                  Contact
+                  Property Title
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
                   Date
@@ -70,30 +100,41 @@ const TourRequest = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-sm text-black font-normal">
-              {currentItems.map((item, index) => (
+              {currentItems?.map((item, index) => (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-no-wrap">{index + 1}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">
                     <div className="flex items-center">
                       {/* <Image src={item.img} width={50} height={50} /> */}
-                      <div className="ml-2">{item.name}</div>
+                      <div className="ml-2">{item?.bookedBy.fullname}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-no-wrap">{item.email}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">
-                    {item.contact}
+                    {item?.bookedBy.email}
                   </td>
-                  <td className="px-6 py-4 whitespace-no-wrap">{item.date}</td>
-                  <td className="px-6 py-4 whitespace-no-wrap">{item.time}</td>
-
                   <td className="px-6 py-4 whitespace-no-wrap">
-                    <div
-                      className="flex justify-center  items-center cursor-pointer"
-                      onClick={() => alert("Modal")}
-                    >
-                      <Button size="xs" color="#235789">
-                        Confirm & Mail
-                      </Button>
+                    {item?.property?.propertyTitle}
+                  </td>
+                  <td className="px-6 py-4 whitespace-no-wrap">{item?.date}</td>
+                  <td className="px-6 py-4 whitespace-no-wrap">{item?.time}</td>
+
+                 
+                  <td className="px-6 py-4 whitespace-no-wrap">
+                    
+                    <div className="flex gap-5">
+                     
+                      <GiConfirmed
+                        size={25}
+                        style={{ color: "#07f22f" }}
+                        className="cursor-pointer"
+                        onClick={() => confirm(item?._id, item)}
+                      />
+                      <GiCancel
+                        style={{ color: "#f20707" }}
+                        size={25}
+                        className="cursor-pointer"
+                        onClick={() => reject(item?._id)}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -102,13 +143,12 @@ const TourRequest = () => {
           </table>
         </div>
       </div>
-
       {/* Pagination */}
-      <div className="flex justify-end mt-5 mr-10 mb-5">
+      <div className="flex justify-end mt-5 mr-10">
         <nav className="flex justify-center">
           <ul className="flex">
             {Array.from(
-              { length: Math.ceil(bookingData.length / itemsPerPage) },
+              { length: Math.ceil(data?.length / itemsPerPage) },
               (_, i) => (
                 <li key={i}>
                   <button
