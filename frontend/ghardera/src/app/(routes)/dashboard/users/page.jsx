@@ -1,164 +1,165 @@
 "use client";
 
-import React, {useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
-  NativeSelect,  
   Button,
-
+  TextInput,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import FeatherIcon from "feather-icons-react";
+import Link from "next/link";
+import { APIDeleteUser, APIGetAllUsers } from "@/apis/User";
+import { toast } from "react-toastify";
 
-const users = [
-  {
-    name: "Rojan Maharjan",
-    email: "rozanmhzn07@gmail.com",
-    contact: "9841963906",
-    status: "active",
-  },
-  {
-    name: "Suahan Maharjan",
-    email: "suahanmhzn@gmail.com",
-    contact: "9843820870",
-    status: "active",
-  },
-  {
-    name: "Purnima Maharjan",
-    email: "purnimamhzn@gmail.com",
-    contact: "9745352372",
-    status: "active",
-  },
-  {
-    name: "Rojan Maharjan",
-    email: "rozanmhzn07@gmail.com",
-    contact: "9841963906",
-    status: "non-active",
-  },
-  {
-    name: "Purnima Maharjan",
-    email: "purnimamhzn@gmail.com",
-    contact: "9745352372",
-    status: "active",
-  },
-  {
-    name: "Purnima Maharjan",
-    email: "purnimamhzn@gmail.com",
-    contact: "9745352372",
-    status: "non-active",
-  },
-  {
-    name: "Purnima Maharjan",
-    email: "purnimamhzn@gmail.com",
-    contact: "9745352372",
-    status: "active",
-  },
-];
+
 
 const Users = () => {
+  const [data, setData] = useState(null);
+  const [filterData, setFilterData] = useState(null);
+  const [refreshUI, setRefreshUI] = useState(false);
 
-   const [currentPage, setCurrentPage] = useState(1);
-   const itemsPerPage = 5; // Change this value to adjust the number of items per page
+  const fetchData = async () => {
+    try {
+      const res = await APIGetAllUsers();
+      if (res) {
+        setData(res);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-   const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-   const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
+  const deleteUser = async (slug) => {
+    console.log(slug);
 
-   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    try {
+      const res = await APIDeleteUser(slug);
+      if (res) {
+        toast.success(res.message);
+        setRefreshUI(true);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error);
+    }
+  };
 
-    const [opened, { open, close }] = useDisclosure(false);
+  useEffect(() => {
+  
+    fetchData();
+  }, [refreshUI]);
 
+  useEffect(() => {
+    const filteredData = data?.filter((item) => item.role === "user");
+    setFilterData(filteredData);
+    // console.log(filterData)
+  }, [data]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Change this value to adjust the number of items per page
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filterData?.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
     <>
-      <div className="w-full">
-        <div className=" flex justify-between">
-          <div className="text-2xl font-semibold">Users</div>
-          <div className="w-32">
-            <NativeSelect
-              // description="Sort By"
-              data={[
-                { label: "Latest", value: "Latest" },
-                { label: "Oldest", value: "Oldest" },
-                //  { label: "Svelte", value: "svelte", disabled: true },
-                //{ label: "Vue", value: "vue" },
-              ]}
+      {/* //top div */}
+      <div className=" m-5">
+        {/* //title section div */}
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-lg font-semibold">Customers Lists</span>
+          </div>
+          <Link href="/dashboard/users/add-user">
+            <Button color="#235789">+ Create Customer</Button>
+          </Link>
+        </div>
+        {/* //search section div */}
+        <div className="flex gap-10 mt-5">
+          <div className="w-80">
+            <TextInput
+              placeholder="Search by Location, property Type"
+              leftSection={<FeatherIcon icon="search" size={18} />}
             />
           </div>
+          
         </div>
-        {/* {users.map((data, index) => (
-          <h1 key={index}>{[index + 1, data.name, data.email]}</h1>
-        ))} */}
+
+        {/* Users list table */}
         <div className="mt-5">
           <table className="min-w-full divide-y divide-gray-200">
+
             <thead>
               <tr>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  #
+                  SN
                 </th>
+
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                   Name
                 </th>
+
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                   Email
                 </th>
+
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                   Contact
                 </th>
+
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
+
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  Date Created
+                  Date Joined
                 </th>
+
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                   Action
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentItems.map((item, index) => (
+
+            <tbody className="bg-white divide-y divide-gray-200 text-sm text-black font-normal">
+              {currentItems?.map((item, index) => (
                 <tr key={index} onClick={() => console.log(index)}>
                   <td className="px-6 py-4 whitespace-no-wrap">{index + 1}</td>
-                  <td className="px-6 py-4 whitespace-no-wrap">{item.name}</td>
+                  <td className="px-6 py-4 whitespace-no-wrap">
+                    <div className="flex items-center">
+                      {/* <Image src={item.img} width={50} height={50} /> */}
+                      <div className="ml-2">{item.fullname}</div>
+                    </div>
+                  </td>
                   <td className="px-6 py-4 whitespace-no-wrap">{item.email}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">
-                    {item.contact}
-                  </td>
-                  <td className="px-6 py-4 whitespace-no-wrap">
-                    {item.status}
-                  </td>
-                  <td className="px-6 py-4 whitespace-no-wrap">
-                    <span>2024-05-03</span>
+                    {item.number}
                   </td>
 
                   <td className="px-6 py-4 whitespace-no-wrap">
-                    <div className="flex gap-3">
-                      {/* <Modal
-                        opened={opened}
-                        onClose={close}
-                        title="Update User" centered
-                      >
-                        <form>
-                          <div>
-                            <TextInput
-                              label="Input label"
-                             // description="Input description"
-                              placeholder="Input placeholder"
-                            />
-                          </div>
-                        </form>
-                      </Modal> */}
-                      {/* <Button onClick={open}>Edit</Button>
-                      <Button color="red">Delete</Button> */}
-                      <div>
-                        <Button variant="transparent" color="blue">
-                          {<FeatherIcon icon="edit" size={18} />}
-                        </Button>
+                    {item.status === "active" ? (
+                      <div className="bg-lime-300 flex justify-items-center p-2 rounded-3xl text-green-700 font-bold">
+                        <span>Active</span>
                       </div>
-                      <div>
-                        <Button variant="transparent" color="red">
-                          {<FeatherIcon icon="trash-2" size={18} />}
-                        </Button>
+                    ) : (
+                      <div className="bg-blue-200 flex justify-items-center p-2 rounded-3xl text-blue-500 font-bold">
+                        <span>Non-Active</span>
                       </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-no-wrap">
+                    {"2024-02-05"}
+                  </td>
+
+                  <td className="px-6 py-4 whitespace-no-wrap">
+                    <div className="flex gap-5">
+                      <FeatherIcon icon="edit-2" size={20} />
+                      <FeatherIcon
+                        icon="trash-2"
+                        size={20}
+                        className="cursor-pointer"
+                        onClick={() => deleteUser(item._id)}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -169,7 +170,7 @@ const Users = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-end mt-5 mr-10 mb-5">
+      <div className="flex justify-end mt-5 mr-10">
         <nav className="flex justify-center">
           <ul className="flex">
             {Array.from(
@@ -196,4 +197,4 @@ const Users = () => {
   );
 };
 
-export default Users
+export default Users;
