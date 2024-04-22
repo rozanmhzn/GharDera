@@ -85,47 +85,69 @@ const deleteListing = async (req, res) => {
 
 //Searching properties
 const searchListing = async (req, res) => {
+  console.log(req.body);
   try {
     let query = {};
-
-    const searchQuery = req.query.q;
-
-    if (searchQuery) {
-      query.$or = [
-        { title: { $regex: searchQuery, $options: "i" } },
-        { location: { $regex: searchQuery, $options: "i" } },
-      ];
-    }
+    let {
+      minPrice,
+      maxPrice,
+      propertyAddress,
+      propertyStatus,
+      propertyType,
+      propertyCategory,
+    } = req.query;
 
     //filter option
-    const minPrice = req.query.minPrice;
-    const maxPrice = req.query.maxPrice;
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) {
-        query.price.$gte = parseFloat(minPrice);
-      }
-      if (maxPrice) {
-        query.price.$lte = parseFloat(maxPrice);
-      }
+    console.log(
+      minPrice,
+      maxPrice,
+      propertyAddress,
+      propertyStatus,
+      propertyType,
+      propertyCategory
+    );
+    if (propertyAddress) {
+      query["propertyAddress.street"] = {
+        $regex: propertyAddress,
+        $options: "i",
+      };
     }
-
-    const parking = req.query.parking;
-    if (parking) {
-      query.parking = parking;
+    if (propertyCategory) {
+      propertyCategory = propertyCategory.toLowerCase();
+      query.propertyCategory = propertyCategory;
     }
-
-    const propertyType = req.query.propertyType;
     if (propertyType) {
+      propertyType = propertyType.toLowerCase();
       query.propertyType = propertyType;
     }
 
-    
-    console.log(searchQuery);
+    if (propertyStatus) {
+      propertyStatus = propertyStatus.toLowerCase();
+      query.propertyStatus = propertyStatus;
+    }
+    if (minPrice) {
+      query.propertyPrice = {}; // Ensure initialization if undefined
+      query.propertyPrice.$lte = parseFloat(minPrice);
+    }
+    if (maxPrice) {
+      query.propertyPrice = {}; // Ensure initialization if undefined
+      query.propertyPrice.$gte = parseFloat(maxPrice);
+    }
+    if (minPrice && maxPrice) {
+      query.propertyPrice = {};
+      query.propertyPrice = {
+        $gte: parseFloat(minPrice),
+        $lte: parseFloat(maxPrice),
+      };
+    }
     console.log(query);
+
     const results = await Property.find(query);
+
     res.status(200).json({ results });
   } catch (err) {
+    console.log(err);
+
     res.status(404).json(err.message);
   }
 };
