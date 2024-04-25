@@ -34,7 +34,6 @@ const Inquiy = () => {
       if (res) {
         toast.success(res.message);
         close(true);
-        //router.push('/dashboard/inquiry')
       }
     } catch (error) {
       // console.log(error)

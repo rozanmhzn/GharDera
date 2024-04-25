@@ -15,3 +15,7 @@ export const APIDeleteProperty = (slug) => DeleteRequest(`property/admin/propert
 
 export const APIUpdateProperty = (data, slug) =>PutRequest(`property/admin/property/${slug}`, data);
 
+export const APISubmitInquiry = (data) => PostRequest(`property/user/inquiry/`, data);
+
+export const APIReplyInquiry = (data) =>  PostRequest(`property/admin/inquiry/reply`, data);
+

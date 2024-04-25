@@ -30,7 +30,6 @@ import {
   APIAddToFavoutires,
   APIGetFavouriteProperty,
   APIRemoveFromFavoutire,
-  APITourBook,
 } from "@/apis/UserInteraction";
 import { APIGetEachPropertyUser, APISubmitInquiry } from "@/apis/Property";
 import { toast } from "react-toastify";
@@ -130,8 +129,14 @@ const PropertyDescription = () => {
   };
 
   const onSubmit = async (data) => {
-   console.log(data)
-  };
+ try {
+   const res = await APISubmitInquiry(data);
+   reset();
+   toast.success("Inquiry Submitted Successfully");
+ } catch (error) {
+   console.log(error);
+   toast.error("Inquiry Submission Failed");
+ }  };
 
   const items = [
     { title: "Home", href: "/" },
