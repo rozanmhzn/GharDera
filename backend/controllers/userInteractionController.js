@@ -105,10 +105,7 @@ const confirmBooking = async (req, res) => {
 //for saving favourite properties
 const addFavourites = async (req, res) => {
   const userID = req.user;
-  const {propertyID} = req.body;
- // console.log(userID);
- // console.log(propertyID);
-
+  const { propertyID } = req.body;
   if (!userID) {
     return res.status(404).json({ message: "Authentication required..!!" });
   }
@@ -126,13 +123,43 @@ const addFavourites = async (req, res) => {
   }
 };
 
+//for getting Each saved properties
+const getEachFavourites = async (req, res) => {
+  const userID = req.user;
+  const propertyID = req.params.id;
+  if (!userID) {
+    return res.status(404).json({ message: "Authentication required..!!" });
+  }
+  try {
+    const property = await Property.findById(propertyID);
+    if (!property) {
+      return false;
+    }
+    const favProps = await savedProperty.findOne({ savedBy: userID, property: propertyID });
+    res.status(200).json({ favProps });
+  } catch (err) {
+    return res.status(404).json(err.message);
+  }
+};
+
+
 //for getting saved properties
 const getFavourites = async (req, res) => {
   const userID = req.user;
   try {
     const favProps = await savedProperty
       .find({ savedBy: userID })
-      .populate([{ path: "property", select: "title" }]);
+      .populate([
+        {
+          path: "property",
+          select: [
+            "propertyTitle",
+            "propertyAddress",
+            "propertyPrice",
+            "ImagesURL",
+          ],
+        },
+      ]);
 
       res.status(200).json({favProps});
   } 
@@ -164,5 +191,6 @@ module.exports = {
     confirmBooking,
     addFavourites,
     getFavourites,
-    deleteFavourites
+    deleteFavourites,
+    getEachFavourites
 }
