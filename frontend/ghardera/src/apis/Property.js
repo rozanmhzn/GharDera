@@ -7,6 +7,8 @@ export const APIGetParamsProperty = (query) =>  GetRequest(`property/search?${qu
 
 export const APIGetEachProperty = (slug) => GetRequest(`property/admin/properties/${slug}`);
 
+export const APIGetEachPropertyUser = (slug) =>  GetRequest(`property/user/properties/${slug}`);
+
 export const APIAddProperty = (data) => PostRequest("property/admin/property", data);
 
 export const APIDeleteProperty = (slug) => DeleteRequest(`property/admin/property/${slug}`);
