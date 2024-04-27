@@ -30,8 +30,9 @@ import {
   APIAddToFavoutires,
   APIGetFavouriteProperty,
   APIRemoveFromFavoutire,
+  APITourBook,
 } from "@/apis/UserInteraction";
-import { APIGetEachPropertyUser, APISubmitInquiry } from "@/apis/Property";
+import { APIGetAllProperty, APIGetEachPropertyUser, APISubmitInquiry } from "@/apis/Property";
 import { toast } from "react-toastify";
 
 export const images = [
@@ -45,7 +46,7 @@ const PropertyDescription = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const pathname = usePathname();
-  const baseURL = "http://localhost:4000/api/property/user/properties/";
+  //const baseURL = "http://localhost:4000/api/property/user/properties/";
   const path = pathname.split("/");
   const slug = path[2];
 
@@ -71,15 +72,10 @@ const PropertyDescription = () => {
 
   const fetchData = async () => {
     try {
-      await axios({
-        method: "GET",
-        url: baseURL,
-      }).then((response) => {
-        setNearData(response.data);
-        //console.log(response.data);
-      });
+      const res = await APIGetAllProperty();
+      setNearData(res);
     } catch (error) {
-      //console.log(error);
+      console.log(error);
     }
   };
   useEffect(() => {
@@ -97,6 +93,17 @@ const PropertyDescription = () => {
       contact: "",
       message: "",
       email: "",
+    },
+  });
+
+  const {
+    control: control2,
+    handleSubmit: handleSubmit2,
+    formState: { errors: errors2 },
+  } = useForm({
+    defaultValues: {
+      date: "",
+      time: "",
     },
   });
 
@@ -129,14 +136,27 @@ const PropertyDescription = () => {
   };
 
   const onSubmit = async (data) => {
- try {
-   const res = await APISubmitInquiry(data);
-   reset();
-   toast.success("Inquiry Submitted Successfully");
- } catch (error) {
-   console.log(error);
-   toast.error("Inquiry Submission Failed");
- }  };
+    try {
+      const res = await APISubmitInquiry(data);
+      reset();
+      toast.success("Inquiry Submitted Successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Inquiry Submission Failed");
+    }
+  };
+
+  const onSubmitTour = async (data) => {
+    // console.log(data);
+    try {
+      const res = await APITourBook(data);
+      console.log(res);
+      close(true);
+      toast.success("Tour Request Posted Successfully");
+    } catch (error) {
+      toast.error("Tour Request Failed");
+    }
+  };
 
   const items = [
     { title: "Home", href: "/" },
@@ -245,10 +265,9 @@ const PropertyDescription = () => {
                     onClose={close}
                     title="Book a Tour"
                     centered
-                    //style={{}}
-                    //className=""
+                   
                   >
-                    <form onSubmit={""}>
+                    <form onSubmit={handleSubmit2(onSubmitTour)}>
                       <div className="">
                         <div className="font-medium flex justify-between p-2">
                           <div>
@@ -270,13 +289,11 @@ const PropertyDescription = () => {
                             control={control2}
                             name="date"
                             rules={{ required: "required" }}
-                            // defaultValue={item?.email}
                             render={({ field }) => (
                               <TextInput
                                 {...field}
                                 type="date"
-                                //value={item?.email}
-                                // placeholder="example@gmail.com"
+                                
                                 error={errors2?.tourBook?.date.message}
                               />
                             )}
@@ -306,15 +323,10 @@ const PropertyDescription = () => {
                             control={control2}
                             name={"property"}
                             defaultValue={data?._id}
-                            //rules={{ required: "required" }}
                             render={({ field }) => (
                               <TextInput
                                 type="hidden"
                                 {...field}
-                                //value={defaultValue}
-                                //value={data?._id}
-
-                                //error={errors.message?.message}
                               />
                             )}
                           />
@@ -326,7 +338,6 @@ const PropertyDescription = () => {
                             radius={4}
                             size="md"
                             style={{ backgroundColor: "#235789" }}
-                            //leftSection={<SlCalender/>}
                             className="p-4"
                           >
                             Reply
@@ -337,48 +348,18 @@ const PropertyDescription = () => {
                   </Modal>
                   <div
                     className="space-y-6 w-[30vw] p-7 bg-bgYellow h-fit rounded-xl"
-                    // onSubmit={handleSubmit()}
                   >
                     <div>
                       <header className="text-primary text-center mb-7">
                         Let&apos;s Talk! Request a Tour and Discover Your Dream
                         Place Today!
                       </header>
-                      {/* <label className="text-subHeading">Your name</label>
-                <div className="mt-2">
-                  <Controller
-                    control={control}
-                    name={"name"}
-                    rules={{ required: "required" }}
-                    render={({ field }) => <TextInput {...field} placeholder="Name" error={errors.name?.message} />}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between">
-                  <label className="text-subHeading">Contact Number</label>
-                </div>
-                <div className="mt-2">
-                  <Controller
-                    control={control}
-                    name={"contact"}
-                    rules={{ required: "required" }}
-                    render={({ field }) => (
-                      <TextInput {...field} placeholder="Password" error={errors.contact?.message} />
-                    )}
-                  />
-                  <div className="error">{errors.username && <p>{errors.contact.message}</p>}</div>
-                    </div> */}
                     </div>
-
                     <div className="w-full mt-20 flex justify-center">
                       <Button
-                        //type="submit"
                         radius={4}
                         size="md"
                         style={{ backgroundColor: "#235789" }}
-                        //leftSection={<SlCalender/>}
                         className="p-4"
                         onClick={open}
                       >
