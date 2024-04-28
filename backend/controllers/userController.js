@@ -64,36 +64,106 @@ const authorizeRole = (role) => {
 //login user
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-
-  try {
-    const user = await User.login(email, password);
-
-    // const token = createToken(user._id, user.email, user.role); //creating token
-    const token = createToken(user);
-    res.status(200).json({ email, token });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  if (!email || !password) {
+    throw Error("email and password required");
   }
 
-  //res.json({   msg: "login user",});
+  try {
+    const user = await User.findOne({ email });
+    const fullName = user.fullname;
+    console.log(fullName);
+
+    if (!user) {
+      throw Error("user not found.");
+    }
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.status(404).json({ message: "incorrect password" });
+    }
+
+    if (!user.isVerified) {
+      return res
+        .status(200)
+        .json({ message: "Please verify your account first..!!" });
+    }
+
+    if (user.twoFAstatus) {
+      const otp = await new OTP({
+        userID: user._id,
+        OTP_Code: generateOTP(),
+      }).save();
+
+      user.OTP_Code = otp.OTP_Code;
+      await user.save();
+
+      const message = `This is your One-Time-Password for login, ${otp.OTP_Code} \n
+      This code is valid only for 60 seconds.`;
+      await sendMail({
+        email: email,
+        subject: "OTP for login...!!",
+        message: message,
+      });
+
+      await otp.deleteOne({ userID: user._id });
+
+      res
+        .status(200)
+        .json({ id: user._id, message: "OTP has been sent in your Email." });
+    }
+    else {
+      const token = createToken(user);
+
+      res.status(200).json({ email, token, fullName });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
 };
 
 //signup user
 const signupUser = async (req, res) => {
+  console.log(req.body);
   const { fullname, email, password, number } = req.body;
-
   try {
     const user = await User.signup(fullname, email, password, number);
+    const fullName = user.fullname;
+    console.log(fullName);
 
-    const token = createToken(user); //creating token
+    //for Verification
+    if (!user.isVerified) {
+      const otp = await new OTP({
+        userID: user._id,
+        OTP_Code: generateOTP(),
+      }).save();
 
-    res.status(200).json({ email, token });
+      user.OTP_Code = otp.OTP_Code;
+      await user.save();
+
+      //Generating reset Token
+      const verifyUserToken = jwt.sign({ id: user._id }, SecretKey, {
+      });
+      console.log(verifyUserToken);
+
+      const verifyURL = `${req.protocol}://localhost:3000/verifyuser/${verifyUserToken}`;
+      const message = `We got a Signup request. Please click the link below to verify your account and enter the OTP ${otp.OTP_Code}.\n\n
+    ${verifyURL}\n\n\n`;
+
+      await sendMail({
+        email: email,
+        subject: "OTP for Account Verification...!!",
+        message: message,
+      });
+
+      res
+        .status(200)
+        .json({ message: "Verifaction OTP has been sent in your Email." });
+    }
   } catch (error) {
-    //console.log(fullname)
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
-
-  // res.json({msg: "signup user", });
 };
 
 //Get all user after authentication for admin
