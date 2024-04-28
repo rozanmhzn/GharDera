@@ -1,40 +1,37 @@
 "use client";
+import { APIUserRegister } from "@/apis/Auth";
+import { useAuth } from "@/stores/AuthProvider";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
-import axios from "axios";
-import { Router, useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
-  const router = useRouter();
-
+  const {  signup } = useAuth();
   const {
     handleSubmit,
+    watch,
     formState: { errors },
     control,
   } = useForm({
     defaultValues: {
+      fullname: "",
       email: "",
       password: "",
-      fullname: "",
       number: "",
+      confirm: "",
     },
   });
+  let pwd = watch("password");
   const onSubmit = async (data) => {
-   // console.log(data);
     try {
-      const response = await axios
-        .post("http://localhost:4000/api/user/signup", data)
-        .then(function (response) {
-          const token = response.data.token;
-          localStorage.setItem("token", token);
-          //console.log(response.data)
-          router.push("/");
-        });
-    } catch (err) {
-      console.log(err);
+      const res = await APIUserRegister(data);
+      
+      await signup(res);
+      toast.success(res?.message);
+    } catch (error) {
+      console.log(error);
     }
-    //console.log(data);
   };
   return (
     <>
@@ -51,10 +48,7 @@ const SignUp = () => {
           <form className="space-y-2" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex justify-between ">
               <div className="w-1/2">
-                <label
-                  for="fullname"
-                  className="block text-sm font-medium  text-gray-900"
-                >
+                <label className="block text-sm font-medium  text-gray-900">
                   Full name
                 </label>
                 <div className="mt-1">
@@ -65,9 +59,8 @@ const SignUp = () => {
                     render={({ field }) => (
                       <TextInput
                         {...field}
-                        control
                         placeholder="Full Name"
-                        error={errors.fullname?.message}
+                        error={errors.fullName?.message}
                       />
                     )}
                   />
@@ -75,10 +68,7 @@ const SignUp = () => {
               </div>
 
               <div>
-                <label
-                  for="number"
-                  className="block text-sm font-medium text-gray-900"
-                >
+                <label className="block text-sm font-medium text-gray-900">
                   Contact
                 </label>
                 <div className="mt-1">
@@ -89,9 +79,8 @@ const SignUp = () => {
                     render={({ field }) => (
                       <TextInput
                         {...field}
-                        control
                         placeholder="Contact"
-                        error={errors.number?.message}
+                        error={errors.contact?.message}
                       />
                     )}
                   />
@@ -99,10 +88,7 @@ const SignUp = () => {
               </div>
             </div>
             <div>
-              <label
-                for="email"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
+              <label className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
               </label>
               <div className="mt-1">
@@ -113,7 +99,6 @@ const SignUp = () => {
                   render={({ field }) => (
                     <TextInput
                       {...field}
-                      control
                       placeholder="Email"
                       error={errors.email?.message}
                     />
@@ -124,10 +109,7 @@ const SignUp = () => {
 
             <div>
               <div className="flex items-center justify-between">
-                <label
-                  for="password"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
+                <label className="block text-sm font-medium leading-6 text-gray-900">
                   Password
                 </label>
               </div>
@@ -139,9 +121,33 @@ const SignUp = () => {
                   render={({ field }) => (
                     <PasswordInput
                       {...field}
-                      control
                       placeholder="Password"
                       error={errors.password?.message}
+                    />
+                  )}
+                />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-medium leading-6 text-gray-900">
+                  Confirm Password
+                </label>
+              </div>
+              <div className="mt-1">
+                <Controller
+                  control={control}
+                  name={"confirm"}
+                  rules={{
+                    required: "You must specify a password",
+                    validate: (value) =>
+                      value === pwd || "The passwords do not match",
+                  }}
+                  render={({ field }) => (
+                    <PasswordInput
+                      {...field}
+                      placeholder="Password"
+                      error={errors.confirm?.message}
                     />
                   )}
                 />

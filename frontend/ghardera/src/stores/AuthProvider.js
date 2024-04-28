@@ -1,8 +1,10 @@
 "use client";
 
 import { useContext, createContext, useState, useEffect } from "react";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import VerifyOTP from "@/app/(auth)/verifyotp/page";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
@@ -14,7 +16,14 @@ const AuthProvider = ({ children }) => {
   const login = async (res) => {
     try {
       console.log(res);
-      if (res) {
+      if (res.id) {
+        window.localStorage.setItem("id", res.id);
+        router.push("/verifyotp");
+      }
+      if (res.email) {
+        if (window.localStorage.getItem("id")) {
+          window.localStorage.removeItem("id");
+        }
         setCurrentUser(res.email);
         setToken(res.token);
         console.log(res.fullName);
@@ -38,6 +47,17 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const signup = async (res) => {
+    try {
+      console.log(res);
+      if (res) {
+        router.push("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const logout = async () => {
     setCurrentUser(null);
     setToken("");
@@ -56,7 +76,7 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ currentUser, token, login, logout, fullName }}
+      value={{ currentUser, token, login, logout, signup, fullName }}
     >
       {children}
     </AuthContext.Provider>
