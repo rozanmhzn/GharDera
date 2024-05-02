@@ -1,19 +1,33 @@
 "use client";
 
-import { TextInput, Button, FileButton, Alert } from "@mantine/core";
+import { TextInput, Button, Alert } from "@mantine/core";
 import React, { useEffect, useState, useRef } from "react";
-import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
-import img from "../../../../assets/profileImage/rozan.png";
+import { APIUpdateProfile, APIUserProfile } from "@/apis/User";
+import { toast } from "react-toastify";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 
+import { app } from "../../../../../firebase";
 
+import CardProfile from "@/components/CardProfile";
+import { useAuth } from "@/stores/AuthProvider";
 
 const Profile = () => {
   const [profileImage, setProfileImage] = useState(undefined);
-  const fileref = useRef(null);
+  const [fileUploadError, setFileUploadError] = useState(false);
   const [data, setData] = useState(null);
+  const { login } = useAuth();
 
-  
+  useEffect(() => {
+    if (profileImage) {
+      handleImageUpload(profileImage);
+    }
+  }, [profileImage]);
 
   const {
     handleSubmit,
@@ -31,13 +45,59 @@ const Profile = () => {
     },
   });
 
-  
+  const handleImageUpload = (profileImage) => {
+    const storage = getStorage(app);
+    const fileName = new Date().getTime() + profileImage.name;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, profileImage);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(progress);
+      },
+      (error) => {
+        setFileUploadError(true);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log(downloadURL);
+        });
+      }
+    );
+  };
+
+  const fetchUser = async () => {
+    try {
+      const res = await APIUserProfile();
+      setData(res);
+
+      for (const [key, value] of Object.entries(res)) {
+        setValue(key, value);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
- 
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   const onSubmit = async (data) => {
-   console.log(data)
+    try {
+      const res = await APIUpdateProfile(data);
+      if (res) {
+        //await login(res?.updatedProfile);
+        toast.success(res.message);
+      }
+    } catch (error) {
+      toast.error("Profile update failed..!!");
+      console.log(error.message);
+    }
   };
 
   return (
@@ -45,35 +105,11 @@ const Profile = () => {
       <div className="flex p-10">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className=" flex gap-x-10">
-            <div className=" w-64 h-64 mt-5">
-              <input
-                onChange={(e) => setProfileImage(e.target.files[0])}
-                type="file"
-                ref={fileref}
-                hidden
-                accept="image/*"
-              />
-              {profileImage ? (
-                <Image
-                  name="avatar"
-                  onClick={() => fileref.current.click()}
-                  src={img}
-                  width={250}
-                  height={280}
-                  alt="Profile Pic"
-                />
-              ) : (
-                <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                  <button type="button" onClick={() => fileref.current.click()}>
-                    Upload Photo
-                  </button>
-                </div>
-              )}
-              </div>
-        
-
-           
-            {/* </div> */}
+            <CardProfile
+              control={control}
+              setValue={setValue}
+              image={data?.avatar}
+            />
             <div className="w-64 ">
               {/* //Fullname */}
               <div className="mb-2">
@@ -197,8 +233,6 @@ const Profile = () => {
           </div>
         </form>
       </div>
-
-    
     </>
   );
 };
@@ -213,7 +247,6 @@ const deleteProfile = () => {
       color="blue"
       withCloseButton
       title="Alert title"
-      // icon={icon}
     >
       <div>hahaha</div>
     </Alert>

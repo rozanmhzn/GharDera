@@ -25,20 +25,21 @@ const AuthProvider = ({ children }) => {
           window.localStorage.removeItem("id");
         }
         setCurrentUser(res.email);
-        setToken(res.token);
-        console.log(res.fullName);
-        const nameArray = res.fullName.split(" ");
+        if (!!!localStorage.getItem("token")) setToken(res.token);
+        const nameArray = res.fullname.split(" ");
         const initials = nameArray
           .map((n) => n.charAt(0).toUpperCase())
           .join("");
         setFullName(initials);
+        setProfilePicture(res.avatar);
         window.localStorage.setItem("token", res.token);
         window.localStorage.setItem("in", initials);
+        window.localStorage.setItem("profileUrl", res.avatar);
         if (res.email === "admin@ghardera.com") {
           console.log("admin");
           router.push("/dashboard");
         } else {
-          router.push("/user/profile");
+          router.push("/");
         }
       }
     } catch (err) {

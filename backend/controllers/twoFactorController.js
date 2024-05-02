@@ -95,8 +95,6 @@ const resendOTP = async (req, res) => {
 };
 
 const verifyOTP = async (req, res) => {
-  //const userID = req.params.id;
-  //  console.log(userID);
   const { otp, id } = req.body;
   const user = await User.findById(id);
   try {
@@ -107,15 +105,13 @@ const verifyOTP = async (req, res) => {
     }
 
     const email = user.email;
-    const fullName = user.fullname;
+    const fullname = user.fullname;
+    const avatar = user.avatar;
 
     const lastUpdated = new Date(user.updatedAt);
-    //lastUpdated.setMinutes(lastUpdated.getMinutes() + 5);
     const expirationTime = new Date(lastUpdated.getTime() + 60000); // OTP expiration time of 1 minute
 
     const currentTime = new Date();
-
-    //  if (lastUpdated <= currentTime) {
     if (currentTime > expirationTime) {
       console.log("yes");
       user.OTP_Code = null;
@@ -129,14 +125,10 @@ const verifyOTP = async (req, res) => {
         .status(200)
         .json({ message: "Invalid OTP, please try again." });
     } else {
-      console.log("milyo haii milyoo");
-      //creating JWT token
       const token = createToken(user);
-      //console.log(token);
-
       res
         .status(200)
-        .json({ email, token, fullName, message: "Login Successfull" });
+        .json({ email, token, fullname, avatar, message: "Login Successfull" });
     }
 
     user.OTP_Code = null;
@@ -150,16 +142,13 @@ const verifyUser = async (req, res) => {
   console.log(req.params.token);
   const token = req.params.token;
   const { otp } = req.body;
-  //console.log(otp);
   const otpp = parseInt(otp, 10);
   console.log(otpp);
-  //console.log(req.params)
 
   try {
     // Verify JWT token
     const decoded = jwt.verify(token, SecretKey);
     const userID = decoded.id;
-    //console.log(email);
 
     const user = await User.findById(userID);
 
@@ -167,12 +156,11 @@ const verifyUser = async (req, res) => {
       return res.status(404).json({ message: "User Not Found..!!" });
     }
     const email = user.email;
-    const fullName = user.fullname;
+    const fullname = user.fullname;
 
     if (!user.isVerified) {
       console.log("not verified...");
       user.isVerified = true;
-      // user.OTP_Code = null;
 
       await user.save();
       await TwoFA.deleteOne({ userID: user._id });
@@ -188,11 +176,9 @@ const verifyUser = async (req, res) => {
 
       await user.save();
       console.log("milyo haii milyoo");
-      //creating JWT token
       const token = createToken(user);
-      //console.log(token);
 
-      res.status(200).json({ email, token, fullName });
+      res.status(200).json({ email, token, fullname });
     }
 
     user.OTP_Code = null;

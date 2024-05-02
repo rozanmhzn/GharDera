@@ -70,12 +70,12 @@ const loginUser = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    const fullName = user.fullname;
-    console.log(fullName);
-
     if (!user) {
       throw Error("user not found.");
     }
+
+    const fullname = user.fullname;
+    const avatar = user.avatar;
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
@@ -113,8 +113,7 @@ const loginUser = async (req, res) => {
     }
     else {
       const token = createToken(user);
-
-      res.status(200).json({ email, token, fullName });
+      res.status(200).json({ email, token, fullname, avatar });
     }
   } catch (error) {
     console.log(error);
