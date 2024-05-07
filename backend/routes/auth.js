@@ -8,11 +8,11 @@ const {
 } = require("../controllers/userController");
 
 const {
-  active2FA,
   deActive2FA,
   verifyUser,
   resendOTP,
   verifyOTP,
+  toggle2FA,
 } = require("../controllers/twoFactorController");
 
 
@@ -22,7 +22,7 @@ router.post("/login", loginUser);
 
 router.post("/signup", signupUser);
 
-router.post("/user/active2fa/", verifyToken, authorizeRole("user"), active2FA);
+router.post("/user/toggle2FA/", verifyToken, authorizeRole("user"), toggle2FA);
 
 router.post(
   "/user/deactive2fa/",

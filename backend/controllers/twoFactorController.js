@@ -19,10 +19,10 @@ const generateOTP = () => {
   return OTP;
 };
 
-const active2FA = async (req, res) => {
+const toggle2FA = async (req, res) => {
   console.log(req.user);
-  const otp = generateOTP();
-  console.log(otp);
+  console.log(req.body);
+  const { status } = req.body;
   const userID = req.user;
   try {
     const user = await User.findById(userID);
@@ -31,7 +31,7 @@ const active2FA = async (req, res) => {
       res.status(404).json({ message: "User not found..!!" });
     }
 
-    user.twoFAstatus = true;
+    user.twoFAstatus = status;
     await user.save();
 
     return res.status(200).json({ message: "Two-Factor Enabled" });
@@ -189,7 +189,7 @@ const verifyUser = async (req, res) => {
 };
 
 module.exports = {
-  active2FA,
+  toggle2FA,
   deActive2FA,
   resendOTP,
   verifyOTP,
