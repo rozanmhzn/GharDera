@@ -7,6 +7,8 @@ import Link from "next/link";
 import { Button, Switch } from "@mantine/core";
 import { APIUserDetail } from "@/apis/Auth";
 import { APIUpdate2FA } from "@/apis/User";
+import { useAuth } from "@/stores/AuthProvider";
+import { toast } from "react-toastify";
 
 const items = [
   {
@@ -32,6 +34,8 @@ const items = [
 ];
 
 const SideBar = () => {
+    const { logout } = useAuth();
+
   const [active2FA, setActive2FA] = useState(null);
 
   const userDetail = async () => {
@@ -41,10 +45,10 @@ const SideBar = () => {
   };
 
   const update2FA = async (status) => {
-    //console.log(event.currentTarget.checked)
     console.log(status);
     const res = await APIUpdate2FA({ status });
     setActive2FA(status);
+    toast.success(res?.message);
   };
 
   useEffect(() => {
@@ -65,13 +69,10 @@ const SideBar = () => {
               defaultChecked
               label="2FA"
               checked={active2FA}
-              onChange={
-                (event) =>
-                  update2FA(event.currentTarget.checked)
-              }
+              onChange={(event) => update2FA(event.currentTarget.checked)}
             />
             <Link href="">
-              <Button variant="outline" color="red" size="md">
+              <Button variant="outline" color="red" size="md" onClick={logout}>
                 Logout
               </Button>
             </Link>

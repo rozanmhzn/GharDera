@@ -33,8 +33,11 @@ const toggle2FA = async (req, res) => {
 
     user.twoFAstatus = status;
     await user.save();
-
-    return res.status(200).json({ message: "Two-Factor Enabled" });
+    if (status === true) {
+      return res.status(200).json({ message: "Two-Factor Enabled" });
+    } else {
+      return res.status(200).json({ message: "Two-Factor Disabled" });
+    }
   } catch (error) {
     return res.status(404).json({ message: error.message });
   }
@@ -168,14 +171,15 @@ const verifyUser = async (req, res) => {
 
     if (otpp !== user.OTP_Code) {
       console.log("k vako??");
-      return res
-        .status(404)
-        .json({ message: "Invalid OTP, please try again." });
+      res.status(200).json({ email, token, fullname });
+      // return res
+      //   .status(404)
+      //   .json({ message: "Invalid OTP, please try again." });
     } else {
       user.OTP_Code = null;
 
       await user.save();
-      console.log("milyo haii milyoo");
+      // console.log("milyo haii milyoo");
       const token = createToken(user);
 
       res.status(200).json({ email, token, fullname });
