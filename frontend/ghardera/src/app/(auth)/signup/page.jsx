@@ -75,12 +75,18 @@ const SignUp = () => {
                   <Controller
                     control={control}
                     name={"number"}
-                    rules={{ required: "required" }}
+                    rules={{
+                      required: "Contact number is required",
+                      pattern: {
+                        value: /^\d{10}$/,
+                        message: "Contact number must be exactly 10 digits",
+                      },
+                    }}
                     render={({ field }) => (
                       <TextInput
                         {...field}
                         placeholder="Contact"
-                        error={errors.contact?.message}
+                        error={errors.number?.message}
                       />
                     )}
                   />
@@ -95,7 +101,13 @@ const SignUp = () => {
                 <Controller
                   control={control}
                   name={"email"}
-                  rules={{ required: "required" }}
+                  rules={{
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Invalid email address",
+                    },
+                  }}
                   render={({ field }) => (
                     <TextInput
                       {...field}
@@ -117,7 +129,15 @@ const SignUp = () => {
                 <Controller
                   control={control}
                   name={"password"}
-                  rules={{ required: "required" }}
+                  rules={{
+                    required: "required",
+                    pattern: {
+                      value:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                      message:
+                        "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character, and be at least 8 characters long",
+                    },
+                  }}
                   render={({ field }) => (
                     <PasswordInput
                       {...field}
@@ -140,6 +160,12 @@ const SignUp = () => {
                   name={"confirm"}
                   rules={{
                     required: "You must specify a password",
+                    pattern: {
+                      value:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                      message:
+                        "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character, and be at least 8 characters long",
+                    },
                     validate: (value) =>
                       value === pwd || "The passwords do not match",
                   }}
