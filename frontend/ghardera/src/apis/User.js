@@ -9,6 +9,8 @@ export const APIUpdateProfile = (data) => PutRequest("user/user/profile", data);
 
 export const APIGetUserBooking = () => GetRequest("user/user/bookings");
 
+export const APIConfirmTourRequest = (slug, data) =>  PutRequest(`user/admin/booking/${slug}`, data);
+
 export const APIGetAllBookings = () => GetRequest(`user/admin/bookings`);
 
 export const APIChangePasswordAdmin = (data) =>  PutRequest(`user/admin/settings/changepassword`, data);

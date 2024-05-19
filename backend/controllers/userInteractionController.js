@@ -92,14 +92,14 @@ const confirmBooking = async (req, res) => {
   console.log(req.body);
   const bookingID = req.params.id;
   const email = req.body.bookedBy.email;
-  const { status, date, time } = req.body;
+  const { date, time } = req.body;
   const propertyName = req.body.property.propertyTitle;
   const { street, city } = req.body.property.propertyAddress;
 
   try {
     const updatedBooking = await TourDate.findByIdAndUpdate(
       bookingID,
-      { $set: { status: status } },
+      { $set: { status: true } },
       { new: true }
     );
 

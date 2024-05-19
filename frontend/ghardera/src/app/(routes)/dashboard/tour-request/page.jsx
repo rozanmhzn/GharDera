@@ -1,31 +1,25 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Button, TextInput,  } from "@mantine/core";
+import {  TextInput } from "@mantine/core";
 import FeatherIcon from "feather-icons-react";
 import { GiConfirmed, GiCancel } from "react-icons/gi";
-import axios from "axios";
-import { APIConfirmTourRequest } from "@/apis/User";
+import { APIConfirmTourRequest, APIGetAllBookings } from "@/apis/User";
 import { toast } from "react-toastify";
 
 const TourRequest = () => {
   const [data, setData] = useState(null);
 
+  const fetchData = async () => {
+    try {
+      const res = await APIGetAllBookings();
+      console.log(res);
+      setData(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios({
-          method: "GET",
-          url: `http://localhost:4000/api/user/admin/bookings`,
-        }).then((response) => {
-          // console.log(response.data);
-          setData(response.data);
-          //console.log(response.data)
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchData();
   }, []);
 
@@ -95,6 +89,9 @@ const TourRequest = () => {
                   Time
                 </th>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -117,10 +114,20 @@ const TourRequest = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-no-wrap">{item?.date}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">{item?.time}</td>
-
-                 
                   <td className="px-6 py-4 whitespace-no-wrap">
-                    
+                    {item.status === "true" ? (
+                      <div className="bg-lime-300 flex justify-items-center p-2 rounded-3xl text-green-700 font-bold">
+                        <span>Confirmed</span>
+                      </div>
+                    ) : (
+                      <div className="bg-blue-200 flex justify-items-center p-2 rounded-3xl text-blue-500 font-bold">
+                        <span>Pending</span>
+                      </div>
+                    )}
+                  </td>
+
+                  <td className="px-6 py-4 whitespace-no-wrap">
+
                     <div className="flex gap-5">
                      
                       <GiConfirmed
