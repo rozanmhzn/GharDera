@@ -2,12 +2,19 @@
 
 import React from "react";
 import Link from "next/link";
-import { Button, PasswordInput, TextInput } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import { Controller, useForm } from "react-hook-form";
+import { APIForgetPassword } from "@/apis/Auth";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
-  const onSubmit = (data) => {
-    // console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      const res = await APIForgetPassword(data);
+      toast.success(res?.message);
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   const {
