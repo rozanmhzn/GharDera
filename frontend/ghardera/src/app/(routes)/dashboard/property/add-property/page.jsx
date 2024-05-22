@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Breadcrumbs,
   NativeSelect,
@@ -36,6 +36,14 @@ const newItems = items.map((item, index) => (
 ));
 
 const AddProperty = () => {
+  const [wordCount, setWordCount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleWordCount = (text) => {
+    const words = text.trim().split(/\s+/);
+    return words.filter((word) => word.length > 0).length;
+  };
+
   const router = useRouter();
   const ref = useRef(null);
 
@@ -321,13 +329,29 @@ const AddProperty = () => {
                     render={({ field }) => (
                       <>
                         <Textarea
-                          error={errors.propertyDescription?.message}
+                          error={
+                            errors.propertyDescription?.message || errorMessage
+                          }
                           {...field}
                           size="xl"
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(e) => {
+                            const newValue = e.target.value;
+                            const currentWordCount = handleWordCount(newValue);
+
+                            if (currentWordCount <= 200) {
+                              field.onChange(newValue);
+                              setWordCount(currentWordCount);
+                              setErrorMessage("");
+                            } else {
+                              setErrorMessage(
+                                "No more than 200 words in the description."
+                              );
+                            }
+                          }}
                           placeholder="Write description here"
                         />
+                        <div>{wordCount} / 200 words</div>
                       </>
                     )}
                   />
@@ -767,10 +791,7 @@ const AddProperty = () => {
                   defaultValue="Rojan Admin"
                   render={({ field }) => (
                     <>
-                      <TextInput
-                        {...field}
-                        value="Rojan Admin"
-                      />
+                      <TextInput {...field} value="Rojan Admin" />
                     </>
                   )}
                 />

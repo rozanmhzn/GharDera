@@ -36,11 +36,19 @@ const newItems = items.map((item, index) => (
 ));
 
 const EditProperty = () => {
+   const [wordCount, setWordCount] = useState(0);
+   const [errorMessage, setErrorMessage] = useState("");
+
+   const handleWordCount = (text) => {
+     const words = text.trim().split(/\s+/);
+     return words.filter((word) => word.length > 0).length;
+   };
+
   const router = useRouter();
   const pathname = usePathname();
   const path = pathname.split("/");
   const slug = path[3];
-  console.log(slug);
+  // console.log(slug);
 
   const ref = useRef(null);
   const [data, setData] = useState(null);
@@ -380,17 +388,34 @@ const EditProperty = () => {
                       control={control}
                       name={"propertyDescription"}
                       rules={{ required: "required" }}
-                      defaultValue={data?.propertyDescription || ""}
                       render={({ field }) => (
                         <>
                           <Textarea
-                            error={errors.propertyDescription?.message}
+                            error={
+                              errors.propertyDescription?.message ||
+                              errorMessage
+                            }
                             {...field}
                             size="xl"
                             value={field.value}
-                            onChange={field.onChange}
+                            onChange={(e) => {
+                              const newValue = e.target.value;
+                              const currentWordCount =
+                                handleWordCount(newValue);
+
+                              if (currentWordCount <= 200) {
+                                field.onChange(newValue);
+                                setWordCount(currentWordCount);
+                                setErrorMessage("");
+                              } else {
+                                setErrorMessage(
+                                  "No more than 200 words in the description."
+                                );
+                              }
+                            }}
                             placeholder="Write description here"
                           />
+                          <div>{wordCount} / 200 words</div>
                         </>
                       )}
                     />
@@ -671,7 +696,6 @@ const EditProperty = () => {
                               {...field}
                               placeholder="1050 sq. ft"
                               error={errors.propertyArea?.message}
-                            
                             />
                           </>
                         )}
