@@ -14,3 +14,5 @@ export const APIConfirmTourRequest = (slug, data) =>  PutRequest(`user/admin/boo
 export const APIGetAllBookings = () => GetRequest(`user/admin/bookings`);
 
 export const APIChangePasswordAdmin = (data) =>  PutRequest(`user/admin/settings/changepassword`, data);
+
+export const APIChangePassword = (data) => PutRequest(`user/user/settings/changepassword`, data);

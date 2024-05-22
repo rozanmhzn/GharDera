@@ -237,23 +237,16 @@ const profile = async (req, res) => {
 const changePassword = async (req, res) => {
   const userID = req.user;
   const { oldpassword, newpassword } = req.body;
+  console.log(userID, oldpassword, newpassword);
   try {
-    if (!oldpassword || !newpassword) {
-      throw new Error("Please fill all fields..!!");
-    }
-
-    if (!validator.isStrongPassword(newpassword)) {
-      throw Error("strong password required.");
-    }
     const user = await User.findById(userID);
 
     if (!user) {
       throw Error("User not found.!!");
     }
-
     const match = await bcrypt.compare(oldpassword, user.password);
     if (!match) {
-      throw new Error("incorrect password");
+      return res.status(404).json({ message: "Old password did not match." });
     }
     const salt = await bcrypt.genSalt(10);
     const password = await bcrypt.hash(newpassword, salt);
@@ -262,7 +255,7 @@ const changePassword = async (req, res) => {
     await user.save();
     return res.status(200).json({ message: "Password changed successfully" });
   } catch (err) {
-    return res.status(400).json({ error: err.message });
+    return res.status(404).json({ err });
   }
 };
 
