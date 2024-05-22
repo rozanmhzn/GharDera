@@ -61,7 +61,7 @@ router.delete(
 router.post("/user/forgot-password", forgotPassword);
 
 //reset password route for user
-router.post("/user/reset-password", resetPassword);
+router.put("/reset-password/:token", resetPassword);
 
 //property tour date booking route
 router.post("/book-tour", verifyToken, bookTour);

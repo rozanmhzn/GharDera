@@ -340,35 +340,32 @@ const forgotPassword = async (req, res) => {
 
 //resetPassword for user
 const resetPassword = async (req, res) => {
-  const { token, newPassword } = req.body;
-  try {
-  
+    try {
+      const token = req.params.token;
+      const { newPassword } = req.body;
 
-    // Verify JWT token
-    const decoded = jwt.verify(token, SecretKey);
-    const email = decoded.email;
-    console.log(email);
+      // Verify JWT token
+      const decoded = jwt.verify(token, SecretKey);
+      const email = decoded.email;
+      console.log(email);
 
-    if (!validator.isStrongPassword(newPassword)) {
-      throw Error("strong password required.");
+      // Find user by email
+      const user = await User.findOne({ email: email });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const password = await bcrypt.hash(newPassword, salt);
+
+      user.password = password;
+      await user.save();
+
+      res.status(200).json({ message: "Password reset successful" });
+    } catch (err) {
+      console.log(err);
+      res.status(404).json({ err });
     }
-
-    // Find user by email
-    const user = await User.findOne({ email: email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const password = await bcrypt.hash(newPassword, salt);
-
-    user.password = password;
-    await user.save();
-
-    res.status(200).json({ message: "Password reset successful" });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
 };
 
 module.exports = {
