@@ -28,12 +28,10 @@ const userSchema = new Schema({
   role: {
     type: String,
     default: "user",
-  },
-  updated: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  }
+},
+{timestamps : true}
+);
 
 //static method
 
