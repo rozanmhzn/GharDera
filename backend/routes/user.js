@@ -58,13 +58,13 @@ router.delete(
 );
 
 //Forgot password route for user
-router.post("/user/forgot-password", forgotPassword);
+router.post("/forgot-password", forgotPassword);
 
 //reset password route for user
 router.put("/reset-password/:token", resetPassword);
 
 //property tour date booking route
-router.post("/book-tour", verifyToken, bookTour);
+router.post("/book-tour", verifyToken, authorizeRole("user"), bookTour);
 
 //route for geting tour date for user
 router.get("/user/:id/bookings/", verifyToken, authorizeRole('user'), getUserBooking)

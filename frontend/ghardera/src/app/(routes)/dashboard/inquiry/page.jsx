@@ -2,41 +2,50 @@
 
 import React, { useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { Modal, Button, TextInput, Textarea } from "@mantine/core";
+import { Modal, Button, TextInput, Textarea, em } from "@mantine/core";
 
 import FeatherIcon from "feather-icons-react";
+import { inquiryData } from "@/utils/constant/inquiryData";
 import { BsChat } from "react-icons/bs";
 import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { APIReplyInquiry } from "@/apis/Property";
+import { APIGetAllInquiry, APIReplyInquiry } from "@/apis/Property";
+import { useRouter } from "next/navigation";
 
 const Inquiy = () => {
   const [data, setData] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
+  const router = useRouter();
 
   const {
     control,
+    setValue,
+    reset,
     formState: { errors },
     handleSubmit,
   } = useForm({
     defaultValues: {
-      //sender : "",
       email: "",
       message: "",
     },
   });
 
+  const reply = (email) => {
+    open();
+    setValue("email", email);
+  };
+
   const onSubmit = async (data) => {
-    console.log(data);
+    //console.log(data)
     try {
       const res = await APIReplyInquiry(data);
       if (res) {
-        toast.success(res.message);
         close(true);
+        toast.success(res.message);
+        reset();
       }
     } catch (error) {
-      // console.log(error)
       toast.error(error);
     }
   };
@@ -44,14 +53,8 @@ const Inquiy = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios({
-          method: "GET",
-          url: `http://localhost:4000/api/property/admin/inquiries`,
-        }).then((response) => {
-          //console.log(response.data)
-          setData(response.data);
-          //console.log(response.data)
-        });
+        const res = await APIGetAllInquiry();
+        setData(res);
       } catch (error) {
         console.log(error);
       }
@@ -69,6 +72,65 @@ const Inquiy = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
     <>
+      {/* //Modal's body */}
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Inquiry Reply"
+        centered
+       
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="">
+            <div>
+              <label className="text-xl font-semibold">Email :</label>
+              <Controller
+                control={control}
+                name="email"
+                rules={{ required: "required" }}
+                // defaultValue={item?.email}
+                render={({ field }) => (
+                  <TextInput
+                    {...field}
+                    //value={item?.email}
+                    placeholder="example@gmail.com"
+                    error={errors.email?.message}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="mt-5">
+              <label className="text-xl font-semibold">Message :</label>
+              <Controller
+                control={control}
+                name="message"
+                rules={{ required: "required" }}
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    placeholder="Enter your message here...."
+                    error={errors.message?.message}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="w-full mt-5 flex justify-center">
+              <Button
+                type="submit"
+                radius={4}
+                size="md"
+                style={{ backgroundColor: "#235789" }}
+                className="p-4"
+              >
+                Reply
+              </Button>
+            </div>
+          </div>
+        </form>
+      </Modal>
+
       {/* //top div */}
       <div className=" m-5">
         {/* //title section div */}
@@ -88,7 +150,6 @@ const Inquiy = () => {
         {/* Table Section */}
         <div className="mt-5">
           <table className="min-w-full divide-y divide-gray-200">
-            {/* <table className='table-auto'> */}
             <thead>
               <tr>
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
@@ -106,7 +167,6 @@ const Inquiy = () => {
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
                   Inquiry
                 </th>
-                
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
                   Actions
                 </th>
@@ -116,7 +176,6 @@ const Inquiy = () => {
               {currentItems?.map((item, index) => (
                 <tr
                   key={index}
-                  //onClick={() => console.log(item?.email)}
                 >
                   <td className="px-6 py-4 whitespace-no-wrap">{index + 1}</td>
                   <td className="px-6 py-4 whitespace-no-wrap">
@@ -133,73 +192,11 @@ const Inquiy = () => {
                     {item.message}
                   </td>
                  
-                  {/* //Modal's body */}
-                  <Modal
-                    opened={opened}
-                    onClose={close}
-                    title="Inquiry Reply"
-                    centered
-                    
-                  >
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                      <div className="">
-                        <div>
-                          <label className="text-xl font-semibold">
-                            Email :
-                          </label>
-                          <Controller
-                            control={control}
-                            name="email"
-                            rules={{ required: "required" }}
-                            // defaultValue={item?.email}
-                            render={({ field }) => (
-                              <TextInput
-                                {...field}
-                                //value={item?.email}
-                                placeholder="example@gmail.com"
-                                error={errors.email?.message}
-                              />
-                            )}
-                          />
-                        </div>
 
-                        <div className="mt-5">
-                          <label className="text-xl font-semibold">
-                            Message :
-                          </label>
-                          <Controller
-                            control={control}
-                            name="message"
-                            rules={{ required: "required" }}
-                            render={({ field }) => (
-                              <Textarea
-                                {...field}
-                                placeholder="Enter your message here...."
-                                error={errors.message?.message}
-                              />
-                            )}
-                          />
-                        </div>
-
-                        <div className="w-full mt-5 flex justify-center">
-                          <Button
-                            type="submit"
-                            radius={4}
-                            size="md"
-                            style={{ backgroundColor: "#235789" }}
-                            //leftSection={<SlCalender/>}
-                            className="p-4"
-                          >
-                            Reply
-                          </Button>
-                        </div>
-                      </div>
-                    </form>
-                  </Modal>
                   <td className="px-6 py-4 whitespace-no-wrap">
                     <div
                       className="flex justify-center  items-center gap-3 cursor-pointer"
-                      onClick={open}
+                      onClick={() => reply(item?.email)}
                     >
                       <div>
                         <BsChat size={18} />

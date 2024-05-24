@@ -1,5 +1,3 @@
-
-
 import CategoryCard from "@/components/common/CategoryCard";
 import { categoryData } from "@/utils/constant/categoriesData";
 
@@ -25,7 +23,6 @@ const CategorySection = () => {
             );
           })}
         </div>
-       
       </section>
     </>
   );

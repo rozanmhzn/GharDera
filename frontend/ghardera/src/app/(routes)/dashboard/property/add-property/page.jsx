@@ -11,10 +11,12 @@ import {
   Radio,
 } from "@mantine/core";
 import Link from "next/link";
-import { useForm, Controller, } from "react-hook-form";
+import { useForm, Controller, setValue, getValues } from "react-hook-form";
 import FeatherIcon from "feather-icons-react";
 import ColoredLine from "@/components/common/ColoredLine";
 import ImageDropzone from "@/components/ImageDropzone";
+
+import axios from "axios";
 import { toast } from "react-toastify";
 import { APIAddProperty } from "@/apis/Property";
 import { useRouter } from "next/navigation";
@@ -43,7 +45,6 @@ const AddProperty = () => {
     const words = text.trim().split(/\s+/);
     return words.filter((word) => word.length > 0).length;
   };
-
   const router = useRouter();
   const ref = useRef(null);
 
@@ -74,6 +75,7 @@ const AddProperty = () => {
         city: "",
         province: "",
       },
+      //propertyAddress : "",
       propertyDescription: "",
       bedRooms: "0",
       kitchens: "0",
@@ -791,7 +793,11 @@ const AddProperty = () => {
                   defaultValue="Rojan Admin"
                   render={({ field }) => (
                     <>
-                      <TextInput {...field} value="Rojan Admin" />
+                      <TextInput
+                        {...field}
+                        value="Rojan Admin"
+                        // error={errors.userRef?.message}
+                      />
                     </>
                   )}
                 />

@@ -5,7 +5,7 @@ import React from "react";
 
 const UserDashboardLayout = ({ children }) => {
   return (
-    <section className="flex gap-10 ">
+    <section className="flex ">
       <SideBar />
       <div className="w-full">{children}</div>
     </section>

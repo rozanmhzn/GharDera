@@ -7,7 +7,6 @@ const SidebarItems = ({ item }) => {
   const pathname = usePathname();
 
   const onclick = () => {
-   
     router.push(path);
   };
 
@@ -17,8 +16,8 @@ const SidebarItems = ({ item }) => {
   return (
     <>
       <div
-        className={` p-3 text-white cursor-pointer hover:bg-white hover:text-black
-        ${isActive && " text-inherit bg-white"}
+        className={` p-3 cursor-pointer  hover:text-white
+        ${isActive && " text-white"}
         `}
         onClick={onclick}
       >
@@ -26,9 +25,7 @@ const SidebarItems = ({ item }) => {
           <div>{icon}</div>
           <div>{name}</div>
         </div>
-    
       </div>
-     
     </>
   );
 };

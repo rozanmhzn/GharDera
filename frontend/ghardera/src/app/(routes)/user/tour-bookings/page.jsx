@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
+import { useDisclosure } from "@mantine/hooks";
 import { APIGetUserBooking } from "@/apis/User";
 import Image from "next/image";
 
 const TourBookings = () => {
   const [data, setData] = useState(null);
+  const [opened, { open, close }] = useDisclosure(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // Change this value to adjust the number of items per page
@@ -14,7 +15,7 @@ const TourBookings = () => {
   const fetchData = async () => {
     try {
       const res = await APIGetUserBooking();
-      console.log(res.booking);
+      // console.log(res.booking)
       setData(res.booking);
       // console.log(data)
     } catch (error) {
@@ -39,7 +40,6 @@ const TourBookings = () => {
         <div className="flex items-center">
           <span className="text-lg font-semibold">Tour Bookings</span>
         </div>
-       
 
         {/* Table Section */}
         <div className="mt-5">
@@ -50,7 +50,6 @@ const TourBookings = () => {
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
                   SN
                 </th>
-               
                 <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4  text-black font-semibold uppercase tracking-wider">
                   Property Title
                 </th>
@@ -69,38 +68,48 @@ const TourBookings = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-sm text-black font-normal">
-              {currentItems?.map((item, index) => (
-                <tr key={index} onClick={() => console.log(item?._id)}>
-                  <td className="px-6 py-4 whitespace-no-wrap">{index + 1}</td>
-                  <td className="px-6 py-4 whitespace-no-wrap">
-                    <div className="flex items-center">
-                      <Image
-                        src={item.property?.ImagesURL[0]}
-                        width={50}
-                        height={50}
-                        alt="asd"
-                      />
-                      <div className="ml-2">{item.property?.propertyTitle}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-no-wrap">
-                    {item.property?.propertyAddress.city}
-                  </td>
-                  <td className="px-6 py-4 whitespace-no-wrap">{item.date}</td>
-                  <td className="px-6 py-4 whitespace-no-wrap">{item.time}</td>
-                  <td className="px-6 py-4 whitespace-no-wrap">
-                    {item.status === "true" ? (
-                      <div className="bg-lime-300 flex justify-items-center p-2 rounded-3xl text-green-700 font-bold">
-                        <span>Confirmed</span>
-                      </div>
-                    ) : (
-                      <div className="bg-blue-200 flex justify-items-center p-2 rounded-3xl text-blue-500 font-bold">
-                        <span>Pending</span>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {currentItems?.length === 0
+                ? "No Tour Bookings"
+                : currentItems?.map((item, index) => (
+                    <tr key={index} onClick={() => console.log(item?._id)}>
+                      <td className="px-6 py-4 whitespace-no-wrap">
+                        {index + 1}
+                      </td>
+                      <td className="px-6 py-4 whitespace-no-wrap">
+                        <div className="flex items-center">
+                          <Image
+                            src={item.property?.ImagesURL[0]}
+                            width={50}
+                            height={50}
+                            alt="asd"
+                          />
+                          <div className="ml-2">
+                            {item.property?.propertyTitle}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-no-wrap">
+                        {item.property?.propertyAddress?.city}
+                      </td>
+                      <td className="px-6 py-4 whitespace-no-wrap">
+                        {item.date}
+                      </td>
+                      <td className="px-6 py-4 whitespace-no-wrap">
+                        {item.time}
+                      </td>
+                      <td className="px-6 py-4 whitespace-no-wrap">
+                        {item.status === "true" ? (
+                          <div className="bg-lime-300 flex justify-items-center p-2 rounded-3xl text-green-700 font-bold">
+                            <span>Confirmed</span>
+                          </div>
+                        ) : (
+                          <div className="bg-blue-200 flex justify-items-center p-2 rounded-3xl text-blue-500 font-bold">
+                            <span>Pending</span>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>

@@ -3,7 +3,6 @@
 import FeatherIcon from "feather-icons-react";
 import React, { useEffect, useState } from "react";
 import SidebarItems from "./SidebarItems";
-import Link from "next/link";
 import { Button, Switch } from "@mantine/core";
 import { APIUserDetail } from "@/apis/Auth";
 import { APIUpdate2FA } from "@/apis/User";
@@ -34,7 +33,7 @@ const items = [
 ];
 
 const SideBar = () => {
-    const { logout } = useAuth();
+  const { logout } = useAuth();
 
   const [active2FA, setActive2FA] = useState(null);
 
@@ -45,6 +44,7 @@ const SideBar = () => {
   };
 
   const update2FA = async (status) => {
+    //console.log(event.currentTarget.checked)
     console.log(status);
     const res = await APIUpdate2FA({ status });
     setActive2FA(status);
@@ -57,6 +57,7 @@ const SideBar = () => {
 
   return (
     <>
+
       <div className="top-0 left-0 h-screen w-60 bg-primary ">
         <div className="flex flex-col h-5/6 justify-between">
           <div className="grid font-semibold">
@@ -66,16 +67,18 @@ const SideBar = () => {
           </div>
           <div className="flex flex-col justify-center items-center gap-5">
             <Switch
+              className="text-xl font-semibold"
               defaultChecked
               label="2FA"
               checked={active2FA}
-              onChange={(event) => update2FA(event.currentTarget.checked)}
+              onChange={
+                (event) =>
+                  update2FA(event.currentTarget.checked)
+              }
             />
-            <Link href="">
-              <Button variant="outline" color="red" size="md" onClick={logout}>
-                Logout
-              </Button>
-            </Link>
+            <Button variant="outline" color="red" size="md" onClick={logout}>
+              Logout
+            </Button>
           </div>
         </div>
       </div>

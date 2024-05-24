@@ -22,7 +22,7 @@ router.post("/login", loginUser);
 
 router.post("/signup", signupUser);
 
-router.post("/user/toggle2FA/", verifyToken, authorizeRole("user"), toggle2FA);
+router.put("/user/toggle2FA/", verifyToken, authorizeRole("user"), toggle2FA);
 
 router.post(
   "/user/deactive2fa/",

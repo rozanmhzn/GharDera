@@ -15,7 +15,6 @@ const Property = () => {
 
   const router = useRouter();
 
-
   const fetchData = async () => {
     try {
       const res = await APIGetAllProperty();
@@ -25,13 +24,17 @@ const Property = () => {
     } catch (error) {
       console.log(error);
     }
-  
   };
 
   useEffect(() => {
     fetchData();
   }, [refreshUI]);
 
+
+  const editPage = (slug) => {
+    router.push(`/dashboard/property/${slug}`);
+    //console.log(slug)
+  };
 
   const deleteProperty = async (slug) => {
     console.log(slug);
@@ -174,7 +177,7 @@ const Property = () => {
                         icon="edit-2"
                         size={20}
                         className="cursor-pointer"
-                       
+                        onClick={() => editPage(item._id)}
                       />
                       <FeatherIcon
                         icon="trash-2"

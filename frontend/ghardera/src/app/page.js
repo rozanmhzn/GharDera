@@ -12,10 +12,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const res = await APIGetAllProperty();
-        console.log(res);
-
         setData(res);
-       
       } catch (error) {
         console.log(error);
       }

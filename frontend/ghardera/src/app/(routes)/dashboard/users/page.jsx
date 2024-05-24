@@ -44,7 +44,6 @@ const Users = () => {
   };
 
   useEffect(() => {
-  
     fetchData();
   }, [refreshUI]);
 
@@ -82,7 +81,6 @@ const Users = () => {
               leftSection={<FeatherIcon icon="search" size={18} />}
             />
           </div>
-          
         </div>
 
         {/* Users list table */}

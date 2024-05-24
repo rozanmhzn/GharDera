@@ -31,6 +31,7 @@ const LoginPage = () => {
       toast.success(res?.message);
     } catch (err) {
       console.log(err);
+      toast.error(err);
     }
   };
 

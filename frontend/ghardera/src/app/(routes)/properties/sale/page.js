@@ -3,7 +3,6 @@
 import { APIGetAllProperty, APIGetParamsProperty } from "@/apis/Property";
 import Search from "@/components/Search";
 import Contents from "@/components/common/Contents";
-
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useState, useEffect } from "react";

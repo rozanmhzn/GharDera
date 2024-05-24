@@ -8,7 +8,7 @@ const Contents = ({ name, propertyDetails }) => {
   //console.log(propertyDetails)
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9; // Change this value to adjust the number of items per page
-
+  console.log(propertyDetails);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = propertyDetails?.slice(
@@ -26,7 +26,6 @@ const Contents = ({ name, propertyDetails }) => {
             {propertyDetails && propertyDetails?.length} Properties Found
           </span>
         </div>
-       
         <div className="grid grid-cols-3 gap-x-14 mt-5">
           {currentItems?.map((data, index) => {
             return (
@@ -36,7 +35,6 @@ const Contents = ({ name, propertyDetails }) => {
             );
           })}
         </div>
-  
       </div>
 
       {/* Pagination */}

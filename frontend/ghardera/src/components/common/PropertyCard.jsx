@@ -2,7 +2,7 @@ import { Carousel } from "@mantine/carousel";
 import React from "react";
 import Card from "../Card";
 
-const PropertyCard = ({ propetiesDetails }) => {
+const PropertyCard = ({ propertiesDetails }) => {
   return (
     <div>
       <Carousel
@@ -12,7 +12,7 @@ const PropertyCard = ({ propetiesDetails }) => {
         slideGap="xl"
         controlsOffset="xs"
       >
-        {propetiesDetails?.map((data, index) => {
+        {propertiesDetails?.map((data, index) => {
           return (
             <div key={index}>
               <Carousel.Slide>
@@ -21,7 +21,6 @@ const PropertyCard = ({ propetiesDetails }) => {
             </div>
           );
 
-         
         })}
       </Carousel>
     </div>

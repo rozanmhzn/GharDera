@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 
 const app = express();
 
+const authRoutes = require("../routes/auth");
 const userRoutes = require("../routes/user");
 
 const propertyRoutes = require("../routes/property");
@@ -22,7 +23,7 @@ app.use(
     origin: "http://localhost:3000",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false,
-    allowedHeaders: ["Content-Type"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     optionsSuccessStatus: 200,
   })
 );
@@ -49,5 +50,6 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
+app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/property", propertyRoutes);

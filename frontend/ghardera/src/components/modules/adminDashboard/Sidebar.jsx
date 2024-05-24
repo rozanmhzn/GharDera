@@ -1,11 +1,8 @@
 "use client";
 
-import { useDisclosure } from "@mantine/hooks";
-import { Button, ScrollArea } from "@mantine/core";
+import { Button } from "@mantine/core";
 import Link from "next/link";
-import { NavLink, Burger } from "@mantine/core";
 import React, { useMemo, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import SidebarItems from "./SidebarItems";
 import { RxDashboard } from "react-icons/rx";
 import { PiHouseBold } from "react-icons/pi";
@@ -19,63 +16,26 @@ const items = [
     path: "/dashboard",
     icon: <RxDashboard size={25} />,
   },
-  // {
-  //   name: "Profile",
-  //   path: "/dashboard/profile",
-  //   icon : ""
-  // },
   {
     name: "Properties",
     path: "/dashboard/property",
     icon: <PiHouseBold size={25} />,
-    // items: [
-    //   {
-    //     name: "View Property",
-    //     path : "/dashboard/property"
-    //   },
-    //   {
-    //     name: "Add New Property",
-    //   },
-    // ],
   },
   {
     name: "Customers",
     path: "/dashboard/users/",
     icon: <FaUserAlt size={25} />,
-    // items: [
-    //   {
-    //     name: "View Users",
-    //     path: "/dashboard/users"
-    //   },
-    //   {
-    //     name: "Add New User",
-    //     path: "/dashboard/users/add-user"
-    //   },
-    // ],
   },
   {
     name: "Inquiries",
-    path: "",
+    path: "/dashboard/inquiry",
     icon: <BsChatDots size={25} />,
   },
   {
     name: "Tour Requests",
-    path: "/dashboard/bookings",
+    path: "/dashboard/tour-request",
     icon: <CgCalendarDates size={25} />,
-    // items: [
-    //   {
-    //     name: "View All Bookings",
-    //   },
-    //   {
-    //     name: "Review Bookings",
-    //   },
-    // ],
   },
-
-  // {
-  //   name: "Settings",
-  //   path: "/dashboard/settings",
-  // },
 ];
 
 const DashboardSidebar = () => {

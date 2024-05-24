@@ -1,8 +1,11 @@
 "use client";
 
-import { TextInput, Button, Alert } from "@mantine/core";
+import { TextInput, Button, FileButton, Alert } from "@mantine/core";
 import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
+import FeatherIcon from "feather-icons-react";
 import { useForm, Controller } from "react-hook-form";
+import axios from "axios";
 import { APIUpdateProfile, APIUserProfile } from "@/apis/User";
 import { toast } from "react-toastify";
 import {
@@ -14,14 +17,17 @@ import {
 
 import { app } from "../../../../../firebase";
 
+import ImageDropzone from "@/components/ImageDropzone";
 import CardProfile from "@/components/CardProfile";
 import { useAuth } from "@/stores/AuthProvider";
 
 const Profile = () => {
   const [profileImage, setProfileImage] = useState(undefined);
+  const fileref = useRef(null);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [data, setData] = useState(null);
-  const { login } = useAuth();
+  //  const [imageUrl, setImageUrl] = useState(null);
+  const { updateAvatar } = useAuth();
 
   useEffect(() => {
     if (profileImage) {
@@ -72,9 +78,11 @@ const Profile = () => {
   const fetchUser = async () => {
     try {
       const res = await APIUserProfile();
+      // console.log(res);
       setData(res);
 
       for (const [key, value] of Object.entries(res)) {
+        // console.log(key,value);
         setValue(key, value);
       }
     } catch (error) {
@@ -82,6 +90,14 @@ const Profile = () => {
     }
   };
 
+  // const updateUser = async (data) =>{
+  //   try {
+  //     const res = await APIUpdateProfile(data);
+  //     console.log(res)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   useEffect(() => {
     fetchUser();
@@ -90,12 +106,14 @@ const Profile = () => {
   const onSubmit = async (data) => {
     try {
       const res = await APIUpdateProfile(data);
+      console.log(res);
       if (res) {
-        //await login(res?.updatedProfile);
+        await updateAvatar(data?.avatar);
+        console.log(res?.avatar);
         toast.success(res.message);
       }
     } catch (error) {
-      toast.error("Profile update failed..!!");
+      toast.error(error);
       console.log(error.message);
     }
   };
@@ -247,6 +265,7 @@ const deleteProfile = () => {
       color="blue"
       withCloseButton
       title="Alert title"
+      // icon={icon}
     >
       <div>hahaha</div>
     </Alert>

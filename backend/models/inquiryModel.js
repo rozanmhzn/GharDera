@@ -12,6 +12,10 @@ const inquirySchema = new Schema(
       type: String,
       required: true,
     },
+    contact: {
+      type: String,
+      required: true,
+    },
     message: {
       type: String,
       required: true,

@@ -13,9 +13,9 @@ const VerifyUser = () => {
   const { login } = useAuth();
   const pathname = usePathname();
   const path = pathname.split("/");
-  console.log(path);
+  //console.log(path);
   const token = path[2];
-  console.log(token);
+  // console.log(token);
   const {
     control,
     handleSubmit,
@@ -33,10 +33,11 @@ const VerifyUser = () => {
       if (res) {
         await login(res);
         console.log(res);
-        toast.success("Signup Successfull...!!");
+        toast.success(res?.message);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
+      toast.error(err);
     }
   };
   return (

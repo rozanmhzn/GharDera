@@ -3,11 +3,15 @@ import { APIUserRegister } from "@/apis/Auth";
 import { useAuth } from "@/stores/AuthProvider";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import Image from "next/image";
+import logo from "../../../assets/logo.svg";
 
 const SignUp = () => {
-  const {  signup } = useAuth();
+  const router = useRouter();
+  const { login, signup } = useAuth();
   const {
     handleSubmit,
     watch,
@@ -26,7 +30,6 @@ const SignUp = () => {
   const onSubmit = async (data) => {
     try {
       const res = await APIUserRegister(data);
-      
       await signup(res);
       toast.success(res?.message);
     } catch (error) {
@@ -39,11 +42,8 @@ const SignUp = () => {
         <div className=" sm:mx-auto sm:w-full sm:max-w-[30rem] box-shadow p-6">
           <div className="flex justify-center items-center p-5">
             <Link href="/">
-              <h1>Logo</h1>
+              <Image src={logo} alt="Logo" width={70} height={50} />
             </Link>
-          </div>
-          <div className="flex justify-center items-center p-5">
-            <h1>Welcome Ghardera Sign Up Page!!</h1>
           </div>
           <form className="space-y-2" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex justify-between ">

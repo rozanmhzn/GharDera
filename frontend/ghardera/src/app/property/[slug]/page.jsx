@@ -32,7 +32,7 @@ import {
   APIRemoveFromFavoutire,
   APITourBook,
 } from "@/apis/UserInteraction";
-import { APIGetAllProperty, APIGetEachPropertyUser, APISubmitInquiry } from "@/apis/Property";
+import { APIGetEachPropertyUser, APISubmitInquiry } from "@/apis/Property";
 import { toast } from "react-toastify";
 
 export const images = [
@@ -46,7 +46,7 @@ const PropertyDescription = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const pathname = usePathname();
-  //const baseURL = "http://localhost:4000/api/property/user/properties/";
+  const baseURL = "http://localhost:4000/api/property/user/properties/";
   const path = pathname.split("/");
   const slug = path[2];
 
@@ -72,10 +72,15 @@ const PropertyDescription = () => {
 
   const fetchData = async () => {
     try {
-      const res = await APIGetAllProperty();
-      setNearData(res);
+      await axios({
+        method: "GET",
+        url: baseURL,
+      }).then((response) => {
+        setNearData(response.data);
+        //console.log(response.data);
+      });
     } catch (error) {
-      console.log(error);
+      //console.log(error);
     }
   };
   useEffect(() => {
@@ -265,7 +270,8 @@ const PropertyDescription = () => {
                     onClose={close}
                     title="Book a Tour"
                     centered
-                   
+                    //style={{}}
+                    //className=""
                   >
                     <form onSubmit={handleSubmit2(onSubmitTour)}>
                       <div className="">
@@ -289,11 +295,13 @@ const PropertyDescription = () => {
                             control={control2}
                             name="date"
                             rules={{ required: "required" }}
+                            // defaultValue={item?.email}
                             render={({ field }) => (
                               <TextInput
                                 {...field}
                                 type="date"
-                                
+                                //value={item?.email}
+                                // placeholder="example@gmail.com"
                                 error={errors2?.tourBook?.date.message}
                               />
                             )}
@@ -326,7 +334,7 @@ const PropertyDescription = () => {
                             render={({ field }) => (
                               <TextInput
                                 type="hidden"
-                                {...field}
+                                {...field}                           
                               />
                             )}
                           />

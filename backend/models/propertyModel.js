@@ -4,38 +4,51 @@ const Schema = mongoose.Schema;
 
 const propertySchema = new Schema(
   {
-    title: {
+    propertyStatus: {
       type: String,
       required: true,
     },
-    description: {
+    propertyTitle: {
       type: String,
       required: true,
     },
-    price: {
+    propertyDescription: {
+      type: String,
+      required: true,
+    },
+    propertyPrice: {
       type: Number,
       required: true,
     },
-    location: {
+    propertyCategory: {
       type: String,
       required: true,
     },
-    parking: {
-      type: Boolean,
+    propertyAddress: {
+      type: Object,
       required: true,
+    },
+    propertyFeature: {
+      type: Array,
+    },
+    parking: {
+      type: Number,
     },
     bathroom: {
       type: Number,
       //required: true,
     },
-    bedroom: {
+    bedRooms: {
       type: Number,
       // required: true,
+    },
+    kitchens: {
+      type: Number,
     },
     floors: {
       type: Number,
     },
-    imagesURL: {
+    ImagesURL: {
       type: Array,
       required: true,
     },
@@ -43,7 +56,7 @@ const propertySchema = new Schema(
       type: String,
       required: true,
     },
-    area: {
+    propertyArea: {
       type: String,
       required: true,
     },
@@ -51,7 +64,27 @@ const propertySchema = new Schema(
       type: Boolean,
       required: true,
     },
-    postedBy: {
+    ownerName: {
+      type: String,
+      required: true,
+    },
+    ownerNumber: {
+      type: String,
+      required: true,
+    },
+    propertyFace: {
+      type: String,
+      required: true,
+    },
+    roadAccess: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      default: "Available",
+    },
+    userRef: {
       type: String,
       required: true,
     },

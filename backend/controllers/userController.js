@@ -1,9 +1,11 @@
 require("dotenv").config();
 
 const User = require("../models/userModel");
+const OTP = require("../models/otpModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const validator = require("validator");
+const sendMail = require("../utils/email");
+const { generateOTP } = require("./twoFactorController");
 
 const SecretKey = process.env.SECRET_KEY;
 
@@ -14,7 +16,7 @@ const createToken = (user) => {
     email: user.email,
     role: user.role,
   };
-  return jwt.sign(payload, SecretKey, { expiresIn: "1h" });
+  return jwt.sign(payload, SecretKey, { expiresIn: "1d" });
 };
 
 //middleware for knowing whether user is authenticated or not
@@ -32,7 +34,6 @@ const verifyToken = (req, res, next) => {
     return res.status(401).json({ message: "Invalid token format" });
   }
   const authToken = tokenParts[1];
-  console.log(authToken);
   //verifying token
   jwt.verify(authToken, SecretKey, (err, decoded) => {
     if (err) {
@@ -41,9 +42,6 @@ const verifyToken = (req, res, next) => {
 
     req.user = decoded.userID;
     req.role = decoded.role;
-    console.log(req.user);
-    console.log(decoded.role);
-    console.log("completed");
     next();
   });
 };
@@ -61,7 +59,7 @@ const authorizeRole = (role) => {
   };
 };
 
-//login user
+//2FA-login
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -79,7 +77,7 @@ const loginUser = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.status(404).json({ message: "incorrect password" });
+      return res.status(404).json({ message: "Incorrect Password" });
     }
 
     if (!user.isVerified) {
@@ -113,7 +111,10 @@ const loginUser = async (req, res) => {
     }
     else {
       const token = createToken(user);
-      res.status(200).json({ email, token, fullname, avatar });
+
+      res
+        .status(200)
+        .json({ email, token, fullname, avatar, message: "Login Successfull" });
     }
   } catch (error) {
     console.log(error);
@@ -159,6 +160,7 @@ const signupUser = async (req, res) => {
         .status(200)
         .json({ message: "Verifaction OTP has been sent in your Email." });
     }
+
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -220,7 +222,6 @@ const profile = async (req, res) => {
   console.log(req.user);
   try {
     const userId = req.user;
-    // console.log(user)
 
     const user = await User.findById(userId);
     if (!user) {
@@ -244,6 +245,7 @@ const changePassword = async (req, res) => {
     if (!user) {
       throw Error("User not found.!!");
     }
+
     const match = await bcrypt.compare(oldpassword, user.password);
     if (!match) {
       return res.status(404).json({ message: "Old password did not match." });
@@ -267,19 +269,27 @@ const logoutUser = async (req, res) => {
 //update profile for user
 const updateProfile = async (req, res) => {
   const userID = req.user;
-  const { fullname, number } = req.body;
   try {
     const user = await User.findById(userID);
 
     if (!user) {
       throw Error("User not found.!!");
     }
-    user.fullname = fullname;
-    user.number = number;
-    await user.save();
-    return res.status(200).json({ message: "Profile updated successfully" });
+    console.log(req.body);
+
+    const updatedProfile = await User.findByIdAndUpdate(userID, req.body, {
+      new: true,
+    });
+
+    return res
+      .status(200)
+      .json({
+        status: 200,
+        updatedProfile,
+        message: "Profile updated successfully",
+      });
   } catch (err) {
-    res.status(404).json({ error: err.message });
+    return res.status(404).json({ status: 404, error: err.message });
   }
 };
 
@@ -313,59 +323,60 @@ const forgotPassword = async (req, res) => {
     }
 
     //Generating reset Token
-    const resetToken = jwt.sign(
-      { email: email},
-      SecretKey,
-      { expiresIn: "1h" }
-    );
+    const resetToken = jwt.sign({ email: email }, SecretKey, {
+      expiresIn: "1h",
+    });
     console.log(resetToken);
 
     const resetURL = `${req.protocol}://localhost:3000/resetpassword/${resetToken}`;
     const message = `We got a request to reset your password. Please click the link below to reset your password.\n\n
-    ${resetURL}\n\n\n This link will expire on 1 hour.`
+    ${resetURL}\n\n\n This link will expire on 1 hour.`;
 
+    await sendMail({
+      email: email,
+      subject: `Reset Your Password..!!`,
+      message: message,
+    });
 
-      await sendMail({
-        email : email,
-        subject : `Reset Your Password..!!`,
-        message : message
-  
+    res
+      .status(200)
+      .json({
+        status: "success",
+        message: "Reset Link have been sent on email.",
       });
-    
-    res.status(200).json({status : "success", message: "Reset Link have been sent on email." });
   } catch (err) {
-   return res.status(400).json({ error: err.message });
+    return res.status(400).json({ error: err.message });
   }
 };
 
 //resetPassword for user
 const resetPassword = async (req, res) => {
-    try {
-      const token = req.params.token;
-      const { newPassword } = req.body;
+  try {
+    const token = req.params.token;
+    const { newPassword } = req.body;
 
-      // Verify JWT token
-      const decoded = jwt.verify(token, SecretKey);
-      const email = decoded.email;
-      console.log(email);
+    // Verify JWT token
+    const decoded = jwt.verify(token, SecretKey);
+    const email = decoded.email;
+    console.log(email);
 
-      // Find user by email
-      const user = await User.findOne({ email: email });
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const salt = await bcrypt.genSalt(10);
-      const password = await bcrypt.hash(newPassword, salt);
-
-      user.password = password;
-      await user.save();
-
-      res.status(200).json({ message: "Password reset successful" });
-    } catch (err) {
-      console.log(err);
-      res.status(404).json({ err });
+    // Find user by email
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    const salt = await bcrypt.genSalt(10);
+    const password = await bcrypt.hash(newPassword, salt);
+
+    user.password = password;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successful" });
+  } catch (err) {
+    console.log(err);
+    res.status(404).json({ err });
+  }
 };
 
 module.exports = {

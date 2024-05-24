@@ -1,6 +1,5 @@
 const { TourDate, savedProperty } = require("../models/bookingModel");
 const Property = require("../models/propertyModel");
-const User = require("../models/userModel");
 const sendMail = require("../utils/email");
 
 //property visit booking
@@ -124,7 +123,6 @@ const confirmBooking = async (req, res) => {
 const addFavourites = async (req, res) => {
   const userID = req.user;
   const { propertyID } = req.body;
-  
   if (!userID) {
     return res.status(404).json({ message: "Authentication required..!!" });
   }

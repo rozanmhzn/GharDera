@@ -6,49 +6,67 @@ const validator = require("validator");
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-  fullname: {
-    type: String,
-    required: true,
+const userSchema = new Schema(
+  {
+    fullname: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    number: {
+      type: String,
+      //required: true,
+      unique: true,
+    },
+    role: {
+      type: String,
+      default: "user",
+    },
+    dob: {
+      type: String,
+    },
+    avatar: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
+    twoFAstatus: {
+      type: Boolean,
+      default: false,
+    },
+    OTP_Code: {
+      type: Number,
+      default: null,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  number: {
-    type: String,
-    //required: true,
-    unique: true,
-  },
-  role: {
-    type: String,
-    default: "user",
+  {
+    timestamps: true,
   }
-},
-{timestamps : true}
 );
 
 //static method
 
 userSchema.statics.signup = async function (fullname, email, password, number) {
+  console.log(fullname, email, password, number);
   //validation
   if (!fullname || !email || !password || !number) {
     // console.log(`fullname is ${fullname}`);
     throw Error("Please fill all fields..!!");
   }
 
-  if (!validator.isEmail(email)) {
-    throw Error("invalid email");
-  }
-
-  if (!validator.isStrongPassword(password)) {
-    throw Error("strong passwor required.");
-  }
 
   const exists = await this.findOne({ email });
   // const exists = await this.find({email : {email}, number : {number}})

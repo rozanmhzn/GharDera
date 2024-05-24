@@ -12,7 +12,8 @@ import {
 } from "firebase/storage";
 import { app } from "../../firebase";
 
-const storeImage = async (file) => {
+export const storeImage = async (file) => {
+ 
   return new Promise((resolve, reject) => {
     const storage = getStorage(app);
     const fileName = new Date().getTime() + file.name;
@@ -35,11 +36,16 @@ const storeImage = async (file) => {
     );
   });
 };
+
+// const ImageDropzone = ({ className, error, control, name, setValue }) => {
 const ImageDropzone = forwardRef(
-  ({ className, error, control, name, setValue }, ref) => {
+  ({ className, error, control, name, setValue, imagesURLs = [] }, ref) => {
     const { getValues } = useForm();
 
-    const [files, setFiles] = useState([]); //for uploading images
+    const [files, setFiles] = useState(imagesURLs); //for uploading images
+    console.log(imagesURLs);
+   
+
     const onDrop = useCallback(
       async (acceptedFiles) => {
         try {
@@ -89,12 +95,16 @@ const ImageDropzone = forwardRef(
       },
     });
 
+   
     const removeFile = (name) => {
-      setFiles((files) => files.filter((file) => file.file.name !== name));
+      setFiles((files) =>
+        files.filter((file) => file?.file?.name || file !== name)
+      );
     };
 
     useEffect(() => {
       console.log(files);
+      //  console.log(allUrls);
     }, [files]); // Log files whenever it changes
 
     return (
@@ -109,20 +119,21 @@ const ImageDropzone = forwardRef(
         </div>
 
         <ul className="grid grid-cols-3 gap-3 mt-5">
-          {files.map((file) => (
-            <li key={file.name}>
+          {files.map((file, index) => (
+            <li key={file.name || index}>
               <Image
-                src={file.preview}
+                src={file.preview || file}
                 alt=""
                 width={200}
                 height={200}
                 onLoad={() => {
-                  URL.revokeObjectURL(file.preview);
+                  URL.revokeObjectURL(file.preview || file);
                 }}
+                // className="h-full w-full object-cover rounded-md"
               />
               <button
                 type="button"
-                onClick={() => removeFile(file.file.name)}
+                onClick={() => removeFile(file?.file?.name || file)}
                 className="w-7 h-7 border border-red-400 rounded-full"
                 radius={10}
               >

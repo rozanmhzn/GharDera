@@ -15,6 +15,8 @@ import { useForm, Controller, setValue, getValues } from "react-hook-form";
 import FeatherIcon from "feather-icons-react";
 import ColoredLine from "@/components/common/ColoredLine";
 import ImageDropzone from "@/components/ImageDropzone";
+
+import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { APIGetEachProperty, APIUpdateProperty } from "@/apis/Property";
@@ -36,29 +38,31 @@ const newItems = items.map((item, index) => (
 ));
 
 const EditProperty = () => {
-   const [wordCount, setWordCount] = useState(0);
-   const [errorMessage, setErrorMessage] = useState("");
+  const [wordCount, setWordCount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
 
-   const handleWordCount = (text) => {
-     const words = text.trim().split(/\s+/);
-     return words.filter((word) => word.length > 0).length;
-   };
+  const handleWordCount = (text) => {
+    const words = text.trim().split(/\s+/);
+    return words.filter((word) => word.length > 0).length;
+  };
 
   const router = useRouter();
   const pathname = usePathname();
   const path = pathname.split("/");
   const slug = path[3];
-  // console.log(slug);
+  console.log(slug);
+  // const pathname =
 
   const ref = useRef(null);
   const [data, setData] = useState(null);
 
   const fetchData = async () => {
     try {
-      
       const res = await APIGetEachProperty(slug);
+      // console.log(res)
       setData(res);
       for (const [key, value] of Object.entries(res)) {
+              // console.log(key,value);
         setValue(key, value);
       }
     } catch (error) {
@@ -119,7 +123,6 @@ const EditProperty = () => {
 
 
   const onSubmit = async (data) => {
-    
     try {
       const res = await APIUpdateProperty(data, slug);
       toast.success(res.message);
@@ -383,7 +386,7 @@ const EditProperty = () => {
                   <label className="text-ld font-medium">
                     Property Description{" "}
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2">                 
                     <Controller
                       control={control}
                       name={"propertyDescription"}

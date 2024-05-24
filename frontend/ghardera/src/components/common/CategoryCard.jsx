@@ -1,8 +1,10 @@
 import FeatherIcon from "feather-icons-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const CategoryCard = ({ categoryInfo, index }) => {
+  const router = useRouter();
   return (
     <div
       className={`flex flex-col ${
@@ -20,12 +22,21 @@ const CategoryCard = ({ categoryInfo, index }) => {
         {categoryInfo?.subHeading}
       </span>
       <figure className="w-64 h-40 relative mb-9">
-        <Image src={categoryInfo?.image} alt="Image" fill objectFit="cover" />
+        <Image
+          src={categoryInfo?.image}
+          alt="Image"
+          fill
+          style={{
+            objectFit: "cover",
+            objectPosition: "center",
+          }}
+        />
       </figure>
       <button
         className={`flex items-center mb-2 border-b-2 ${
           index == 0 ? "border-white" : "border-black"
         }  max-w-max`}
+        onClick={() => router.push(categoryInfo?.link)}
       >
         {categoryInfo?.browseButton}{" "}
         <FeatherIcon icon="chevron-right" size={"16px"} />

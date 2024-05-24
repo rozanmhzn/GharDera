@@ -1,10 +1,8 @@
 "use client";
 
 import { useContext, createContext, useState, useEffect } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import VerifyOTP from "@/app/(auth)/verifyotp/page";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
@@ -12,7 +10,7 @@ const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [token, setToken] = useState("");
   const [fullName, setFullName] = useState("");
-
+  const [profile, setProfilePicture] = useState("");
   const login = async (res) => {
     try {
       console.log(res);
@@ -25,6 +23,8 @@ const AuthProvider = ({ children }) => {
           window.localStorage.removeItem("id");
         }
         setCurrentUser(res.email);
+        console.log(res.token);
+        console.log(res.avatar);
         if (!!!localStorage.getItem("token")) setToken(res.token);
         const nameArray = res.fullname.split(" ");
         const initials = nameArray
@@ -48,6 +48,17 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateAvatar = async (avatar) => {
+    try {
+      if (avatar) {
+        // console.log(avatar)
+        localStorage.setItem("profileUrl", avatar);
+      }
+      //localStorage.removeItem('profileUrl')
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const signup = async (res) => {
     try {
       console.log(res);
@@ -64,7 +75,9 @@ const AuthProvider = ({ children }) => {
     setToken("");
     localStorage.removeItem("token");
     setFullName("");
+    setProfilePicture("");
     localStorage.removeItem("in");
+    localStorage.removeItem("profileUrl");
     router.push("/");
   };
 
@@ -73,11 +86,22 @@ const AuthProvider = ({ children }) => {
     setToken(token);
     const initials = localStorage.getItem("in");
     setFullName(initials);
+    const profile = localStorage.getItem("profileUrl");
+    setProfilePicture(profile);
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ currentUser, token, login, logout, signup, fullName }}
+      value={{
+        currentUser,
+        token,
+        updateAvatar,
+        login,
+        logout,
+        signup,
+        fullName,
+        profile,
+      }}
     >
       {children}
     </AuthContext.Provider>

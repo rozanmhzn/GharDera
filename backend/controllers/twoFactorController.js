@@ -181,13 +181,13 @@ const verifyUser = async (req, res) => {
       console.log("milyo haii milyoo");
       const token = createToken(user);
 
-      res.status(200).json({ email, token, fullname });
+      res.status(200).json({ email, token, fullname, message : "Signup Successfull..!!" });
     }
 
     user.OTP_Code = null;
     await user.save();
   } catch (error) {
-    return res.status(404).json({ message: error.message });
+    return res.status(404).json({ error: error.message });
   }
 };
 

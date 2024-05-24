@@ -1,13 +1,13 @@
 require("dotenv").config();
 
-const Property = require("../models/propertyModel");
 const Inquiry = require("../models/inquiryModel");
+const Property = require("../models/propertyModel");
+const validator = require("validator");
 const sendMail = require("../utils/email");
-
 
 //create a listing or post a property
 const addProperty = async (req, res) => {
- 
+  console.log(req.body);
   try {
     //Posting property
     const property = await Property.create(req.body);
@@ -96,8 +96,8 @@ const searchListing = async (req, res) => {
       propertyType,
       propertyCategory,
     } = req.query;
-
     //filter option
+
     console.log(
       minPrice,
       maxPrice,
@@ -154,14 +154,20 @@ const searchListing = async (req, res) => {
 
 //inquiry form submission
 const submitInquiry = async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, contact, message } = req.body;
 
-  if (!name || !email || !message) {
+  if (!name || !email || !message || !contact) {
     return res.status(404).json({ message: "Fill all required fields...!!" });
   }
   try {
     const inquiry = await Inquiry.create(req.body);
     res.status(200).json({ message: "Inquiry submitted" });
+    await sendMail({
+      email: email,
+      subject: "Recieved your inquiry..!!",
+      message:
+        "We've recieved your message.\n Thank you for contacting us. We'll reply you as soon as possible.",
+    });
   } catch (err) {
     res.status(404).json(err.message);
   }
@@ -170,8 +176,10 @@ const submitInquiry = async (req, res) => {
 //get all inquiries for admin
 const getInquiries = async (req, res) => {
   try {
-    const inquiry = await Inquiry.find().populate([{ path : 'property', select : 'title'}]);
-    res.status(200).json({ inquiry });
+    const inquiry = await Inquiry.find().populate([
+      { path: "property", select: "propertyTitle" },
+    ]);
+    res.status(200).json(inquiry);
   } catch (err) {
     return res.status(404).json(err.message);
   }
@@ -179,51 +187,52 @@ const getInquiries = async (req, res) => {
 
 //get each inquiry for admin
 
-const getInquiry = async (req, res)=>{
+const getInquiry = async (req, res) => {
   const inquiryId = req.params.id;
 
-  try{
-    const inquiry = await Inquiry.findById(inquiryId).populate([{path :'property', select : 'title'}]);
-    if(!inquiry){
-      return res.status(404).json({message : "Property not found..!!"});
+  try {
+    const inquiry = await Inquiry.findById(inquiryId).populate([
+      { path: "property", select: "title" },
+    ]);
+    if (!inquiry) {
+      return res.status(404).json({ message: "Property not found..!!" });
     }
 
-    res.status(200).json({inquiry});
-  }
-  catch(err){
-    return res.status(404).json(err.message)
-  }
-}
-
-//reply to inquiry
-const replyInquiry = async(req, res) =>{
-  try{
-const  {email, message} = req.body;
-    if(!message && !email){
-      return res.status(404).json({message : "Please fill required fields..!!"});
-    }
-    await sendMail({
-      email : email,
-      subject : "Reply to Inquiry..!!",
-      message : message
-    })
-    res.status(200).json({status : "success" ,message : "Inquiry replied..!!"});
-  }
-  catch(err){
+    res.status(200).json({ inquiry });
+  } catch (err) {
     return res.status(404).json(err.message);
   }
-}
+};
+
+//reply to inquiry
+const replyInquiry = async (req, res) => {
+  try {
+    const { email, message } = req.body;
+    if (!message && !email) {
+      return res
+        .status(404)
+        .json({ message: "Please fill required fields..!!" });
+    }
+    await sendMail({
+      email: email,
+      subject: "Reply to Inquiry..!!",
+      message: message,
+    });
+    res.status(200).json({ status: "success", message: "Inquiry replied..!!" });
+  } catch (err) {
+    return res.status(404).json(err.message);
+  }
+};
 
 module.exports = {
   addProperty,
+  deleteListing,
+  updateListing,
   getProperties,
   getPropertyByID,
-  updateListing,
-  deleteListing,
   searchListing,
   submitInquiry,
   getInquiries,
   getInquiry,
-  replyInquiry
- 
+  replyInquiry,
 };

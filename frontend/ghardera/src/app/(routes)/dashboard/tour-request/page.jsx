@@ -4,11 +4,13 @@ import React, { useState, useEffect } from "react";
 import {  TextInput } from "@mantine/core";
 import FeatherIcon from "feather-icons-react";
 import { GiConfirmed, GiCancel } from "react-icons/gi";
+import { useDisclosure } from "@mantine/hooks";
 import { APIConfirmTourRequest, APIGetAllBookings } from "@/apis/User";
 import { toast } from "react-toastify";
 
 const TourRequest = () => {
   const [data, setData] = useState(null);
+  const [opened, { open, close }] = useDisclosure(false);
 
   const fetchData = async () => {
     try {
@@ -127,9 +129,7 @@ const TourRequest = () => {
                   </td>
 
                   <td className="px-6 py-4 whitespace-no-wrap">
-
                     <div className="flex gap-5">
-                     
                       <GiConfirmed
                         size={25}
                         style={{ color: "#07f22f" }}
