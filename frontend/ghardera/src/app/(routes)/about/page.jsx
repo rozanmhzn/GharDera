@@ -13,7 +13,7 @@ export default function About() {
               selling, or renting a property should be as smooth and enjoyable
               as possible. Our mission is to provide a user-friendly platform
               that connects buyers, sellers, and renters with the best real
-              estate options available. Whether you're looking for a cozy
+              estate options available. Whether you`&apos;`re looking for a cozy
               apartment in the city, a spacious family home in the suburbs, or a
               luxurious villa by the beach, Ghardera has you covered. Our
               extensive listings, detailed property descriptions, and

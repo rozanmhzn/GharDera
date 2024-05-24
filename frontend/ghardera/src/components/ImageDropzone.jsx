@@ -115,7 +115,7 @@ const ImageDropzone = forwardRef(
           })}
         >
           <input {...getInputProps()} />
-          <p>Drag 'n' drop some files here, or click to select files</p>
+          <p>Drag `&apos;`n`&apos;` drop some files here, or click to select files</p>
         </div>
 
         <ul className="grid grid-cols-3 gap-3 mt-5">
@@ -153,5 +153,8 @@ const ImageDropzone = forwardRef(
     );
   }
 );
+
+// Set display name for the component
+ImageDropzone.displayName = 'ImageDropzone';
 
 export default ImageDropzone;

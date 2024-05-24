@@ -54,7 +54,7 @@ const AddUser = () => {
           {/* Users details div */}
           <div className="mt-5 flex">
             <div className="w-2/5">
-              <span className="text-lg font-medium">Customer's Details</span>
+              <span className="text-lg font-medium">Customer`&apos;`s Details</span>
             </div>
             <div className="w-full">
               <div className="grid grid-cols-2 gap-5">

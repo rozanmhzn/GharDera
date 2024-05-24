@@ -1,8 +1,7 @@
 
 import Image from "next/image";
 import img from "../../../assets/heroSectionImage.svg";
-import SearchBar from "@/components/Searchbar/searchbar";
-
+import SearchBar from "@/components/Searchbar/Searchbar";
 const HeroSection = () => {
   return (
     <section className="relative h-[35rem] mt-4">
