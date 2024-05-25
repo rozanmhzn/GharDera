@@ -38,8 +38,7 @@ export const storeImage = async (file) => {
 };
 
 // const ImageDropzone = ({ className, error, control, name, setValue }) => {
-const ImageDropzone = forwardRef(
-  ({ className, error, control, name, setValue, imagesURLs = [] }, ref) => {
+const ImageDropzone = ( ({ className, error, control, name, setValue, imagesURLs = [] }, ref) => {
     const { getValues } = useForm();
 
     const [files, setFiles] = useState(imagesURLs); //for uploading images
@@ -115,7 +114,7 @@ const ImageDropzone = forwardRef(
           })}
         >
           <input {...getInputProps()} />
-          <p>Drag `&apos;`n`&apos;` drop some files here, or click to select files</p>
+          <p>Drag &apos;n&apos; drop some files here, or click to select files</p>
         </div>
 
         <ul className="grid grid-cols-3 gap-3 mt-5">
